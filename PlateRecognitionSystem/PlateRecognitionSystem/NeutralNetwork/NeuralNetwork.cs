@@ -1,4 +1,5 @@
-﻿using PlateRecognitionSystem.NeutralNetwork.Layers;
+﻿using PlateRecognitionSystem.Model;
+using PlateRecognitionSystem.NeutralNetwork.Layers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,23 +10,27 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.NeutralNetwork
 {
-    class NeuralNetwork<T> : AbstractHelperClass<T>
+    [Serializable]
+    public class NeuralNetwork<T> : AbstractHelperClass<T> 
          where T : IComparable<T>
     {
-        private IBackPropagation<T> _neuralNet;
-        private double _maximumError = 1.0;
-        private int maximumIteration = 10000;
-        //public int MaximumIteration { get; set; } = 10000;
-        Dictionary<T, double[]> TrainingSet;
+        public int MaximumIteration { get; set; } = 10000;
+        public ViewModel ViewModel { get;set; }
 
-        public delegate void IterationChangedCallBack(object o, NeuralEventArgs args);
-        public event IterationChangedCallBack IterationChanged = null;
+
+        internal Dictionary<T, double[]> TrainingSet;
+
+        private IBackPropagation<T> _neuralNet;
 
         public NeuralNetwork(IBackPropagation<T> IBackPro, Dictionary<T, double[]> trainingSet)
         {
             _neuralNet = IBackPro;
             TrainingSet = trainingSet;
             _neuralNet.InitializeNetwork(TrainingSet);
+        }
+        public NeuralNetwork()
+        {
+
         }
 
         public bool Train()
@@ -47,59 +52,45 @@ namespace PlateRecognitionSystem.NeutralNetwork
 
                 currentIteration++;
 
-                if (IterationChanged != null && currentIteration % 5 == 0)
+                if (currentIteration % 5 == 0)
                 {
-                    Args.CurrentError = currentError;
-                    Args.CurrentIteration = currentIteration;
-                    IterationChanged(this, Args);
+                    ViewModel.CurrentError = currentError;
+                    ViewModel.CurrentIteration = currentIteration;
                 }
 
-            } while (currentError > _maximumError && currentIteration < MaximumIteration && !Args.Stop);
+            } while (currentError > ViewModel.MaximumError && currentIteration < MaximumIteration);
 
-            if (IterationChanged != null)
+            if (Math.Abs(currentError) < 0.001 && currentIteration != 0)
             {
-                Args.CurrentError = currentError;
-                Args.CurrentIteration = currentIteration;
-                IterationChanged(this, Args);
+                ViewModel.CurrentError = currentError;
+                ViewModel.CurrentIteration = currentIteration;
             }
 
-            if (currentIteration >= maximumIteration || Args.Stop)
+            if (currentIteration >= MaximumIteration)
                 return false;//Training Not Successful
 
             return true;
         }
 
-        public void Recognize(double[] Input, ref T MatchedHigh, ref double OutputValueHight,
-            ref T MatchedLow, ref double OutputValueLow)
+        public void Recognize(double[] Input, RecognizeModel<T> recognizeModel)
         {
-            _neuralNet.Recognize(Input, ref MatchedHigh, ref OutputValueHight, ref MatchedLow, ref OutputValueLow);
+            _neuralNet.Recognize(Input,  recognizeModel);
         }
 
         public void SaveNetwork(string path)
         {
-            FileStream FS = new FileStream(path, FileMode.Create);
-            BinaryFormatter BF = new BinaryFormatter();
-            BF.Serialize(FS, _neuralNet);
-            FS.Close();
+            FileStream fileStream = new FileStream(path, FileMode.Create);
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            binaryFormatter.Serialize(fileStream, _neuralNet);
+            fileStream.Close();
         }
 
         public void LoadNetwork(string path)
         {
-            FileStream FS = new FileStream(path, FileMode.Open);
-            BinaryFormatter BF = new BinaryFormatter();
-            _neuralNet = (IBackPropagation<T>)BF.Deserialize(FS);
-            FS.Close();
-        }
-
-        public double MaximumError
-        {
-            get { return _maximumError; }
-            set { _maximumError = value; }
-        }
-        public int MaximumIteration
-        {
-            get { return maximumIteration; }
-            set { maximumIteration = value; }
+            FileStream fileStream = new FileStream(path, FileMode.Open);
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            _neuralNet = (IBackPropagation<T>)binaryFormatter.Deserialize(fileStream);
+            fileStream.Close();
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.NeutralNetwork.Layers
 {
+    [Serializable]
     public abstract class AbstractHelperClass<T> where T : IComparable<T>
     { 
         public double F(double x)

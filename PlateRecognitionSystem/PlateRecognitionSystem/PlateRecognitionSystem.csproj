@@ -67,6 +67,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Extension\ImageExtension.cs" />
     <Compile Include="Image\ImageProcessing.cs" />
     <Compile Include="Initialize\GlobalSettings.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -76,10 +77,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\GlobalSettingsModel.cs" />
-    <Compile Include="Model\NeuronModel.cs" />
+    <Compile Include="Model\RecognizeModel.cs" />
+    <Compile Include="Model\ViewModel.cs" />
     <Compile Include="NeutralNetwork\InitializeNeutralNetwork.cs" />
     <Compile Include="NeutralNetwork\Layers\AbstractHelperClass.cs" />
+    <Compile Include="NeutralNetwork\Layers\DoubleLayer.cs" />
     <Compile Include="NeutralNetwork\Layers\IBackPropagation.cs" />
+    <Compile Include="NeutralNetwork\Layers\TripleLayer.cs" />
     <Compile Include="NeutralNetwork\NeuralEventArgs.cs" />
     <Compile Include="NeutralNetwork\NeuralNetwork.cs" />
     <Compile Include="NeutralNetwork\NeuronComponents\FirstLayerInput.cs" />
@@ -87,6 +91,7 @@
     <Compile Include="NeutralNetwork\NeuronComponents\ClassicInput.cs" />
     <Compile Include="NeutralNetwork\NeuronComponents\Output.cs" />
     <Compile Include="NeutralNetwork\Layers\SingleLayer.cs" />
+    <Compile Include="NeutralNetwork\TrainingNetwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

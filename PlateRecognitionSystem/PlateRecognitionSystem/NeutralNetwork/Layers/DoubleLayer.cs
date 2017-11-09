@@ -3,39 +3,67 @@ using System;
 using System.Collections.Generic;
 using PlateRecognitionSystem.Model;
 
+
 namespace PlateRecognitionSystem.NeutralNetwork.Layers
 {
     [Serializable]
-    public class SingleLayer<T> :  AbstractHelperClass<T>,  IBackPropagation<T> where T : IComparable<T>
+    public class DoubleLayer<T> : AbstractHelperClass<T>, IBackPropagation<T> where T : IComparable<T>
     {
         private int _preInputNum;
+        private int _inputNum;
         private int _outputNum;
         private FirstLayerInput[] _preInputLayer;
+        private ClassicInput[] _inputLayer;
         private Output<T>[] _outputLayer;
+
         private double _learningRate = 0.2;
 
-        public SingleLayer(int preInputNum, int outputNum)
+        public DoubleLayer(int preInputNum, int inputNum, int outputNum)
         {
             _preInputNum = preInputNum;
+            _inputNum = inputNum;
             _outputNum = outputNum;
             _preInputLayer = new FirstLayerInput[_preInputNum];
+            _inputLayer = new ClassicInput[_inputNum];
             _outputLayer = new Output<T>[_outputNum];
         }
 
         public void BackPropagate()
         {
-            //Update The First Layer's Weights
-            for (int j = 0; j < _outputNum; j++)
+            int i, j;
+            double total;
+
+            //Fix Input Layer's Error
+            for (i = 0; i < _inputNum; i++)
             {
-                for (int i = 0; i < _preInputNum; i++)
+                total = 0.0;
+                for (j = 0; j < _outputNum; j++)
                 {
-                    _preInputLayer[i].Weights[j] += _learningRate * (_outputLayer[j].Error) * _preInputLayer[i].Value;
+                    total += _inputLayer[i].Weights[j] * _outputLayer[j].Error;
+                }
+                _inputLayer[i].Error = total;
+            }
+
+            //Update The First Layer's Weights
+            for (i = 0; i < _inputNum; i++)
+            {
+                for (j = 0; j < _preInputNum; j++)
+                {
+                    _preInputLayer[j].Weights[i] +=
+                        _learningRate * _inputLayer[i].Error * _preInputLayer[j].Value;
+                }
+            }
+
+            //Update The Second Layer's Weights
+            for (i = 0; i < _outputNum; i++)
+            {
+                for (j = 0; j < _inputNum; j++)
+                {
+                    _inputLayer[j].Weights[i] +=
+                        _learningRate * _outputLayer[i].Error * _inputLayer[j].Output;
                 }
             }
         }
-
-
-
         public void ForwardPropagate(double[] pattern, T output)
         {
             int i, j;
@@ -47,14 +75,28 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 _preInputLayer[i].Value = pattern[i];
             }
 
-            //Calculate The First(Output) Layer's Inputs, Outputs, Targets and Errors
-            for (i = 0; i < _outputNum; i++)
+            //Calculate The First(Input) Layer's Inputs and Outputs
+            for (i = 0; i < _inputNum; i++)
             {
                 total = 0.0;
                 for (j = 0; j < _preInputNum; j++)
                 {
                     total += _preInputLayer[j].Value * _preInputLayer[j].Weights[i];
                 }
+
+                _inputLayer[i].InputSum = total;
+                _inputLayer[i].Output = F(total);
+            }
+
+            //Calculate The Second(Output) Layer's Inputs, Outputs, Targets and Errors
+            for (i = 0; i < _outputNum; i++)
+            {
+                total = 0.0;
+                for (j = 0; j < _inputNum; j++)
+                {
+                    total += _inputLayer[j].Output * _inputLayer[j].Weights[i];
+                }
+
                 _outputLayer[i].InputSum = total;
                 _outputLayer[i].output = F(total);
                 _outputLayer[i].Target = _outputLayer[i].Value.CompareTo(output) == 0 ? 1.0 : 0.0;
@@ -62,12 +104,10 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             }
         }
 
-
-        public virtual double GetError()
+        public double GetError()
         {
-
-        double total = 0.0;
-            for (int j = 0; j<_outputNum; j++)
+            double total = 0.0;
+            for (int j = 0; j < _outputNum; j++)
             {
                 total += Math.Pow((_outputLayer[j].Target - _outputLayer[j].output), 2) / 2;
             }
@@ -76,14 +116,25 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
 
         public void InitializeNetwork(Dictionary<T, double[]> TrainingSet)
         {
+            int i, j;
             Random rand = new Random();
-            for (int i = 0; i < _preInputNum; i++)
+            for (i = 0; i < _preInputNum; i++)
             {
                 _preInputLayer[i] = new FirstLayerInput();
-                _preInputLayer[i].Weights = new double[_outputNum];
-                for (int j = 0; j < _outputNum; j++)
+                _preInputLayer[i].Weights = new double[_inputNum];
+                for (j = 0; j < _inputNum; j++)
                 {
-                    _preInputLayer[i].Weights[j] = 0.01 + ((double)rand.Next(0, 2) / 100);
+                    _preInputLayer[i].Weights[j] = 0.01 + ((double)rand.Next(0, 5) / 100);
+                }
+            }
+
+            for (i = 0; i < _inputNum; i++)
+            {
+                _inputLayer[i] = new ClassicInput();
+                _inputLayer[i].Weights = new double[_outputNum];
+                for (j = 0; j < _outputNum; j++)
+                {
+                    _inputLayer[i].Weights[j] = 0.01 + ((double)rand.Next(0, 5) / 100);
                 }
             }
 
@@ -101,19 +152,31 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             double total = 0.0;
             double max = -1;
 
-            //Apply Input to Network
+            //Apply input to the network
             for (i = 0; i < _preInputNum; i++)
             {
                 _preInputLayer[i].Value = Input[i];
             }
 
-            //Find the [Two] Highest Outputs
-            for (i = 0; i < _outputNum; i++)
+            //Calculate Input Layer's Inputs and Outputs
+            for (i = 0; i < _inputNum; i++)
             {
                 total = 0.0;
                 for (j = 0; j < _preInputNum; j++)
                 {
                     total += _preInputLayer[j].Value * _preInputLayer[j].Weights[i];
+                }
+                _inputLayer[i].InputSum = total;
+                _inputLayer[i].Output = F(total);
+            }
+
+            //Find the [Two] Highest Outputs   
+            for (i = 0; i < _outputNum; i++)
+            {
+                total = 0.0;
+                for (j = 0; j < _inputNum; j++)
+                {
+                    total += _inputLayer[j].Output * _inputLayer[j].Weights[i];
                 }
                 _outputLayer[i].InputSum = total;
                 _outputLayer[i].output = F(total);

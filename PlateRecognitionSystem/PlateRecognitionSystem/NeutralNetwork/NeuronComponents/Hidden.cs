@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 {
+    [Serializable]
     public class Hidden
     {
         public double InputSum { get; set; }

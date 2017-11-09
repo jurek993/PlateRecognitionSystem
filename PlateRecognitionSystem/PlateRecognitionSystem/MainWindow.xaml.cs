@@ -1,20 +1,17 @@
-﻿using PlateRecognitionSystem.Initialize;
+﻿using Microsoft.Win32;
+using PlateRecognitionSystem.Extension;
+using PlateRecognitionSystem.Image;
+using PlateRecognitionSystem.Initialize;
 using PlateRecognitionSystem.Model;
 using PlateRecognitionSystem.NeutralNetwork;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Configuration;
+using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace PlateRecognitionSystem
 {
@@ -23,24 +20,96 @@ namespace PlateRecognitionSystem
     /// </summary>
     public partial class MainWindow : Window
     {
-        private GlobalSettings settings = null;
+        private GlobalSettings _settings = null;
+        private delegate bool TrainingCallBack();
+        private IAsyncResult _result = null;
+        private AsyncCallback _asyCallBack = null;
+        private InitializeNeutralNetwork _initializeNetwork;
+        private RecognizeModel<string> _recognizeModel;
+        public ViewModel Model;
         public MainWindow()
         {
-
             InitializeComponent();
-            settings = new GlobalSettings();
-            settings.InitializeSettings();
-            settings.GenerateTrainingSet();
+            Model = new ViewModel
+            {
+                LogTextBox = "Uruchomienie programu",
+                MaximumError = Double.Parse(ConfigurationManager.AppSettings["DefaultMaximumError"]),
+                LearningRate = Double.Parse(ConfigurationManager.AppSettings["LearningRate"])
+            };
+            DataContext = Model;
+            _settings = new GlobalSettings(Model);
+            _settings.InitializeSettings();
+            _settings.GenerateTrainingSet();
         }
 
         private void comboBoxLayers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            settings.SettingsModel.NumberOfLayers = int.Parse((comboBoxLayers.SelectedItem as ComboBoxItem).Content.ToString());
+            var numberOfLayers = int.Parse((comboBoxLayers.SelectedItem as ComboBoxItem).Content.ToString());
+            if (numberOfLayers > 0){
+                _settings.SettingsModel.NumberOfLayers = numberOfLayers - 1 ;
+            } else
+            {
+                _settings.SettingsModel.NumberOfLayers = numberOfLayers;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            InitializeNeutralNetwork neutralNetwork = new InitializeNeutralNetwork(settings.SettingsModel);
+            Model.LogTextBox += "\nRozpoczęcie nauki sieci";
+            _initializeNetwork = new InitializeNeutralNetwork(_settings.SettingsModel);
+            TrainingNetwork<string> trainingNetwork = new TrainingNetwork<string>(_initializeNetwork.NeuralNetwork, Model);
+            trainingNetwork.StartTraining();
+        }
+
+        private void ImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Bitmap Image(*.bmp)|*.bmp";
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string FileName = openFileDialog.FileName;
+                if (Path.GetExtension(FileName) == ".bmp")
+                {
+                    LoadedImage.Source = new Bitmap(
+                        new Bitmap(FileName), (int)LoadedImage.Width, (int)LoadedImage.Height).ToBitmapImage();
+                }
+            }
+        }
+
+        private void RecognizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            _recognizeModel = new RecognizeModel<string> { MatchedHigh = "?", MatchedLow = "?" };
+            var bitmapImage = LoadedImage.Source as BitmapImage;
+            double[] input = ImageProcessing.ToMatrix(bitmapImage.ToBitmap(),
+                _settings.SettingsModel.AverageImageHeight, _settings.SettingsModel.AverageImageWidth);
+            _initializeNetwork.NeuralNetwork.Recognize(input, _recognizeModel);
+            Model.MatchedHightValue = _recognizeModel.MatchedHigh;
+            Model.MatchedLowValue = _recognizeModel.MatchedLow;
+            Model.MatchedHightPercent = Convert.ToInt32((100 * _recognizeModel.OutputHightValue)).ToString() + " %";
+            Model.MatchedLowPercent = Convert.ToInt32((100 * _recognizeModel.OutputLowValue)).ToString() + " %";
+        }
+
+        private void SaveNetwork_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Neural Network File(*.jur)|*.jur";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                _initializeNetwork.NeuralNetwork.SaveNetwork(saveFileDialog.FileName);
+            }
+        }
+
+        private void LoadNetwork_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Neural Network File(*.jur)|*.jur";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                _initializeNetwork = new InitializeNeutralNetwork();
+                _initializeNetwork.NeuralNetwork = new NeuralNetwork<string>();
+                _initializeNetwork.NeuralNetwork.LoadNetwork(openFileDialog.FileName);
+            }
         }
     }
 }

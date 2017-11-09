@@ -7,11 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="800">
     <Grid>
-        <Menu DockPanel.Dock="Top">
+        <Menu DockPanel.Dock="Top" RenderTransformOrigin="0.43,0.346">
             <MenuItem Header="_File">
-                <MenuItem Header="Save Network" />
-                <MenuItem Header="Load Network" />
-                <MenuItem Header="Select Image" />
+               <MenuItem Name="SaveNetwork" Header="Save Network" Click="SaveNetwork_Click" />
+                <MenuItem Name="LoadNetwork" Header="Load Network" Click="LoadNetwork_Click" />
                 <Separator />
                 <MenuItem Header="_Exit" />
             </MenuItem>
@@ -26,7 +25,23 @@
             <ComboBoxItem>2</ComboBoxItem>
             <ComboBoxItem>3</ComboBoxItem>
         </ComboBox>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="149,84,0,0" TextWrapping="Wrap" Text="0,2" VerticalAlignment="Top" Width="46"/>
+        <TextBox Name="LearningRateTextBox" HorizontalAlignment="Left" Height="23" Margin="149,84,0,0" TextWrapping="Wrap" Text="{Binding Path=LearningRate,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,Delay=250}" VerticalAlignment="Top" Width="46"/>
+        <TextBox Name="LogTextBox"  HorizontalAlignment="Left" Height="93" Margin="267,53,0,0" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Path=LogTextBox,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="517"/>
+        <Label Name="ErrorLabel" Content="Error: " HorizontalAlignment="Left" Margin="267,22,0,0" VerticalAlignment="Top"/>
+        <Label Name="ErrorLabelValue" Content="{Binding Path=CurrentError,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="325,22,0,0" VerticalAlignment="Top"/>
+        <Label Name="IterationLabel" Content="Iteration: " HorizontalAlignment="Left" Margin="658,22,0,0" VerticalAlignment="Top"/>
+        <Label Name="IterationLabelValue" Content="{Binding Path=CurrentIteration,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="749,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.722,0.667"/>
+        <Button Name="ImageButton" Content="Open Image" HorizontalAlignment="Left" Margin="267,156,0,0" VerticalAlignment="Top" Width="97" Click="ImageButton_Click"/>
+        <Image Name="LoadedImage" HorizontalAlignment="Left" Height="158" Margin="31,218,0,0" VerticalAlignment="Top" Width="164"/>
+        <Button Name="RecognizeButton" Content="Recognize It!" HorizontalAlignment="Left" Margin="267,218,0,0" VerticalAlignment="Top" Width="97"  Height="158" Click="RecognizeButton_Click"/>
+        <Label Name="MatchedHightLabel" Content="Matched Hight:" HorizontalAlignment="Left" Margin="401,218,0,0" VerticalAlignment="Top"/>
+        <Label Name="MatchedLowLabel" Content="Matched Low:" HorizontalAlignment="Left" Margin="657,219,0,0" VerticalAlignment="Top"/>
+        <Label Name="MatchedHightValueLabel" Content="{Binding Path=MatchedHightValue,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" FontSize="30" Margin="401,284,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.493,0.322"/>
+        <Label Name="MatchedLowValueLabel" Content="{Binding Path=MatchedLowValue,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" FontSize="30" Margin="632,284,0,0" VerticalAlignment="Top"/>
+        <Label Name="MatchedHightPercentLabel" Content="{Binding Path=MatchedHightPercent,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="401,350,0,0" VerticalAlignment="Top"/>
+        <Label Name="MatchedLowPercentLabel" Content="{Binding Path=MatchedLowPercent,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="658,350,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.543,4.429"/>
+        <Label Name="MaximumErrorLabel" Content="Maximum Error" HorizontalAlignment="Left" Margin="31,112,0,0" VerticalAlignment="Top" Width="131"/>
+        <TextBox Name="MaximumErrorTextBox" HorizontalAlignment="Left" Height="23" Margin="149,116,0,0" TextWrapping="Wrap" Text="{Binding Path=MaximumError,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,Delay=250}" VerticalAlignment="Top" Width="46"/>
 
     </Grid>
 

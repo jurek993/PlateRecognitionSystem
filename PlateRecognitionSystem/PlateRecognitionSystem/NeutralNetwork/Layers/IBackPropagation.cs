@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlateRecognitionSystem.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.NeutralNetwork.Layers
 {
-    interface IBackPropagation<T>
+    public interface IBackPropagation<T> where T : IComparable<T>
     {
         void BackPropagate();
         double GetError();
         void ForwardPropagate(double[] pattern, T output);
         void InitializeNetwork(Dictionary<T, double[]> TrainingSet);
-        void Recognize(double[] Input, ref T MatchedHigh, ref double OutputValueHight,
-                                        ref T MatchedLow, ref double OutputValueLow);
+        void Recognize(double[] Input, RecognizeModel<T> recognizeModel);
     }
 }

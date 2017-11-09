@@ -8,9 +8,6 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace PlateRecognitionSystem.Initialize
@@ -18,32 +15,27 @@ namespace PlateRecognitionSystem.Initialize
 
     //TODO: sprawdz pesa coding style ;) 
 
-    public class GlobalSettings
+    public class GlobalSettings 
     {
         public GlobalSettingsModel SettingsModel { get; set; }
+        private ViewModel _viewModel;
 
 
-        //private int _averageImageHeight = 0;
-        //private int _averageImageWidth = 0;
-        //private int _numOfPatterns = 0;
-        //private Dictionary<string, double[]> _trainingSet = null;
-        //public string Path;
-
-        public GlobalSettings() 
+        public GlobalSettings(ViewModel viewModel) 
         {
+            _viewModel = viewModel;
             SettingsModel = new GlobalSettingsModel();
             NameValueCollection appSettings = ConfigurationManager.AppSettings;
             SettingsModel.PatternPath = System.IO.Path.GetFullPath(appSettings["PatternsDirectory"]);
         }
 
+        
+
         public void InitializeSettings()
         {
-            //textBoxState.AppendText("Initializing Settings..");
-
+            _viewModel.LogTextBox += "\nInicjalizacja ustawień sieci";
             try
             {
-                //comboBoxLayers.SelectedIndex = (Int16.Parse(AppSettings["NumOfLayers"]) - 1);
-
                 //textBoxMaxError.Text = AppSettings["MaxError"];
 
                 string[] images = Directory.GetFiles(SettingsModel.PatternPath, "*.bmp");
@@ -64,7 +56,7 @@ namespace PlateRecognitionSystem.Initialize
 
                 int networkInput = SettingsModel.AverageImageWidth * SettingsModel.AverageImageHeight;
 
-                // textBoxInputUnit.Text = ((int)((double)(networkInput + NumOfPatterns) * .33)).ToString();
+                // TODO: dodac do do UI textBoxInputUnit.Text = ((int)((double)(networkInput + NumOfPatterns) * .33)).ToString();
                 // textBoxHiddenUnit.Text = ((int)((double)(networkInput + NumOfPatterns) * .11)).ToString();
                 // textBoxOutputUnit.Text = NumOfPatterns.ToString();
             }
@@ -73,25 +65,23 @@ namespace PlateRecognitionSystem.Initialize
                 //TODO: dodać logi
                 MessageBox.Show("Error Initializing Settings: " + ex.Message, "Error");
             }
-            //  textBoxState.AppendText("Done!\r\n");
+            _viewModel.LogTextBox += " - Skończone!\r\n";
         }
 
         public void GenerateTrainingSet()
         {
-            // textBoxState.AppendText("Generating Training Set..");
-
+            _viewModel.LogTextBox += "\nPrzygotowanie elementów do nauki";
             string[] patterns = Directory.GetFiles(SettingsModel.PatternPath, "*.bmp");
 
            SettingsModel.TrainingSet = new Dictionary<string, double[]>(patterns.Length);
             foreach (string pattern in patterns)
             {
                 Bitmap temp = new Bitmap(pattern);
-                SettingsModel.TrainingSet.Add(System.IO.Path.GetFileNameWithoutExtension(pattern),
+                SettingsModel.TrainingSet.Add(Path.GetFileNameWithoutExtension(pattern),
                     ImageProcessing.ToMatrix(temp, SettingsModel.AverageImageHeight, SettingsModel.AverageImageWidth));
                 temp.Dispose();
             }
-            // textBoxState.AppendText("Done!\r\n");
+            _viewModel.LogTextBox += " - Skończone!\r\n";
         }
-
     }
 }

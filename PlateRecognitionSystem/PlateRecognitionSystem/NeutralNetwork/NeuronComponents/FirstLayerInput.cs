@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 {
-    internal class FirstLayerInput
+    [Serializable]
+    public class FirstLayerInput
     {
         public double Value { get; set; } = 0;
         public double[] Weights { get; set; }
