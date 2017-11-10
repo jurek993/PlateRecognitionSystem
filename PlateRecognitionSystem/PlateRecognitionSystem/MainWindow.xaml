@@ -9,7 +9,7 @@
     <Grid>
         <Menu DockPanel.Dock="Top" RenderTransformOrigin="0.43,0.346">
             <MenuItem Header="_File">
-               <MenuItem Name="SaveNetwork" Header="Save Network" Click="SaveNetwork_Click" />
+                <MenuItem Name="SaveNetwork" Header="Save Network" Click="SaveNetwork_Click" IsEnabled="{Binding Path=TrainingSuccess,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <MenuItem Name="LoadNetwork" Header="Load Network" Click="LoadNetwork_Click" />
                 <Separator />
                 <MenuItem Header="_Exit" />
@@ -31,9 +31,9 @@
         <Label Name="ErrorLabelValue" Content="{Binding Path=CurrentError,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="325,22,0,0" VerticalAlignment="Top"/>
         <Label Name="IterationLabel" Content="Iteration: " HorizontalAlignment="Left" Margin="658,22,0,0" VerticalAlignment="Top"/>
         <Label Name="IterationLabelValue" Content="{Binding Path=CurrentIteration,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="749,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.722,0.667"/>
-        <Button Name="ImageButton" Content="Open Image" HorizontalAlignment="Left" Margin="267,156,0,0" VerticalAlignment="Top" Width="97" Click="ImageButton_Click"/>
+        <Button Name="ImageButton" Content="Open Image" HorizontalAlignment="Left" Margin="267,156,0,0" VerticalAlignment="Top" Width="97" Click="ImageButton_Click" IsEnabled="{Binding Path=TrainingSuccess,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/> 
         <Image Name="LoadedImage" HorizontalAlignment="Left" Height="158" Margin="31,218,0,0" VerticalAlignment="Top" Width="164"/>
-        <Button Name="RecognizeButton" Content="Recognize It!" HorizontalAlignment="Left" Margin="267,218,0,0" VerticalAlignment="Top" Width="97"  Height="158" Click="RecognizeButton_Click"/>
+        <Button Name="RecognizeButton" Content="Recognize Char!" HorizontalAlignment="Left" Margin="267,218,0,0" VerticalAlignment="Top" Width="97"  Height="76" Click="RecognizeButton_Click" IsEnabled="{Binding Path=ImageLoaded,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <Label Name="MatchedHightLabel" Content="Matched Hight:" HorizontalAlignment="Left" Margin="401,218,0,0" VerticalAlignment="Top"/>
         <Label Name="MatchedLowLabel" Content="Matched Low:" HorizontalAlignment="Left" Margin="657,219,0,0" VerticalAlignment="Top"/>
         <Label Name="MatchedHightValueLabel" Content="{Binding Path=MatchedHightValue,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" FontSize="30" Margin="401,284,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.493,0.322"/>
@@ -42,6 +42,7 @@
         <Label Name="MatchedLowPercentLabel" Content="{Binding Path=MatchedLowPercent,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="658,350,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.543,4.429"/>
         <Label Name="MaximumErrorLabel" Content="Maximum Error" HorizontalAlignment="Left" Margin="31,112,0,0" VerticalAlignment="Top" Width="131"/>
         <TextBox Name="MaximumErrorTextBox" HorizontalAlignment="Left" Height="23" Margin="149,116,0,0" TextWrapping="Wrap" Text="{Binding Path=MaximumError,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,Delay=250}" VerticalAlignment="Top" Width="46"/>
+        <Button x:Name="RecognizePlateButton" Content="Recognize Plate!" HorizontalAlignment="Left" Margin="267,307,0,0" VerticalAlignment="Top" Width="97"  Height="76" Click="RecognizePlateButton_Click" IsEnabled="{Binding ImageLoaded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
     </Grid>
 

@@ -16,5 +16,6 @@ namespace PlateRecognitionSystem.Model
         public int NumberOfPatterns { get; set; }
         public Dictionary<string, double[]> TrainingSet { get; set; }
         public string PatternPath { get; set; }
+        //public int NumberOfInputLa
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace PlateRecognitionSystem.NeutralNetwork
 {
@@ -17,7 +18,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
         }
         public InitializeNeutralNetwork()
         {
-
+            //I used it
         }
         public void CreateNeuralNetwork(GlobalSettingsModel settingsModel)
         {
@@ -43,6 +44,11 @@ namespace PlateRecognitionSystem.NeutralNetwork
                     break;
                     // NeutralNetwork.MaximumError = Double.Parse(textBoxMaxError.Text, CultureInfo.InvariantCulture);
             }
+        }
+
+        public bool CanRecognize(BitmapImage image)
+        {
+            return image != null && NeuralNetwork != null; 
         }
     }
 }

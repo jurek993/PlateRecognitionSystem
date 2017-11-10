@@ -151,7 +151,36 @@ public class ViewModel :  INotifyPropertyChanged
     }
 
 
+    private bool _trainingSuccess;
+    public bool TrainingSuccess
+    {
+        get
+        {
+            return _trainingSuccess;
+        }
 
+        set
+        {
+            _trainingSuccess = value;
+            OnPropertyChanged("TrainingSuccess");
+        }
+    }
+
+
+    private bool _imageLoaded;
+    public bool ImageLoaded
+    {
+        get
+        {
+            return _imageLoaded;
+        }
+
+        set
+        {
+            _imageLoaded = value;
+            OnPropertyChanged("ImageLoaded");
+        }
+    }
 
 
     public event PropertyChangedEventHandler PropertyChanged;

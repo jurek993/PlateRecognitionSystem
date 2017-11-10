@@ -39,7 +39,11 @@ namespace PlateRecognitionSystem.NeutralNetwork
 
                 bool isSuccess = TR.EndInvoke(res);
                 if (isSuccess)
+                {
                     _viewModel.LogTextBox += "- Nauka sieci zakończona pomyśnie\r\n";
+                    _viewModel.TrainingSuccess = true;
+                }
+
                 else
                     _viewModel.LogTextBox += "- Błąd - przekroczona maksymalna iteracja\r\n";
             }

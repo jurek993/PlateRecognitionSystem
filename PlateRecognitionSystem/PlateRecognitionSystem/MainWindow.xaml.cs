@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
+using Microsoft.Win32;
 using PlateRecognitionSystem.Extension;
 using PlateRecognitionSystem.Image;
 using PlateRecognitionSystem.Initialize;
@@ -15,15 +18,10 @@ using System.Windows.Media.Imaging;
 
 namespace PlateRecognitionSystem
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private GlobalSettings _settings = null;
         private delegate bool TrainingCallBack();
-        private IAsyncResult _result = null;
-        private AsyncCallback _asyCallBack = null;
         private InitializeNeutralNetwork _initializeNetwork;
         private RecognizeModel<string> _recognizeModel;
         public ViewModel Model;
@@ -34,7 +32,9 @@ namespace PlateRecognitionSystem
             {
                 LogTextBox = "Uruchomienie programu",
                 MaximumError = Double.Parse(ConfigurationManager.AppSettings["DefaultMaximumError"]),
-                LearningRate = Double.Parse(ConfigurationManager.AppSettings["LearningRate"])
+                LearningRate = Double.Parse(ConfigurationManager.AppSettings["LearningRate"]),
+                TrainingSuccess = false,
+                ImageLoaded = false
             };
             DataContext = Model;
             _settings = new GlobalSettings(Model);
@@ -73,6 +73,7 @@ namespace PlateRecognitionSystem
                 {
                     LoadedImage.Source = new Bitmap(
                         new Bitmap(FileName), (int)LoadedImage.Width, (int)LoadedImage.Height).ToBitmapImage();
+                    Model.ImageLoaded = true;
                 }
             }
         }
@@ -109,7 +110,19 @@ namespace PlateRecognitionSystem
                 _initializeNetwork = new InitializeNeutralNetwork();
                 _initializeNetwork.NeuralNetwork = new NeuralNetwork<string>();
                 _initializeNetwork.NeuralNetwork.LoadNetwork(openFileDialog.FileName);
+                Model.TrainingSuccess = true;
             }
         }
+
+        private void RecognizePlateButton_Click(object sender, RoutedEventArgs e)
+        {
+            var bitmapImage = LoadedImage.Source as BitmapImage;
+            Image<Bgr, Byte> imageCV = new Image<Bgr, byte>(bitmapImage.ToBitmap()); 
+            Mat mat = imageCV.Mat;
+            PlateWindow plateWindow = new PlateWindow();
+            plateWindow.Show();
+        }
+
+
     }
 }
