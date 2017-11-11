@@ -18,10 +18,10 @@ namespace PlateRecognitionSystem.Initialize
     public class GlobalSettings 
     {
         public GlobalSettingsModel SettingsModel { get; set; }
-        private ViewModel _viewModel;
+        private MainViewModel _viewModel;
 
 
-        public GlobalSettings(ViewModel viewModel) 
+        public GlobalSettings(MainViewModel viewModel) 
         {
             _viewModel = viewModel;
             SettingsModel = new GlobalSettingsModel();

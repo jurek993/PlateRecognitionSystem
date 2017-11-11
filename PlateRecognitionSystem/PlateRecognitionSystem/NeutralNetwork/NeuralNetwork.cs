@@ -15,7 +15,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
          where T : IComparable<T>
     {
         public int MaximumIteration { get; set; } = 10000;
-        public ViewModel ViewModel { get;set; }
+        public MainViewModel ViewModel { get;set; }
 
 
         internal Dictionary<T, double[]> TrainingSet;

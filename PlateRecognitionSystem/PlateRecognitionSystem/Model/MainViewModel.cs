@@ -5,10 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
-
-public class ViewModel :  INotifyPropertyChanged
+public class MainViewModel :  INotifyPropertyChanged
 {
+    //TODO: przerobić ten viewModel tak jak plateViewModel. Klasa dziezicząca jest ciekawszym pomysłem. do tego podoba mi się implementacja propertyChange
+
+
     private string _logTextBox;
     public string LogTextBox
     {
@@ -179,6 +182,20 @@ public class ViewModel :  INotifyPropertyChanged
         {
             _imageLoaded = value;
             OnPropertyChanged("ImageLoaded");
+        }
+    }
+
+    private ImageSource _image;
+    public ImageSource Image
+    {
+        get
+        {
+            return _image;
+        }
+        set
+        {
+            _image = value;
+            OnPropertyChanged("Image");
         }
     }
 

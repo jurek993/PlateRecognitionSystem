@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Emgu.CV;
+using PlateRecognitionSystem.Model;
+using PlateRecognitionSystem.Plate;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +22,17 @@ namespace PlateRecognitionSystem
     /// </summary>
     public partial class PlateWindow : Window
     {
-        public PlateWindow()
+        public PlateWindow(MainViewModel viewModel, Mat mat)
         {
+            PlateViewModel plateViewModel = new PlateViewModel
+            {
+                MainViewModel = viewModel,
+                Mat = mat
+            };
+            DataContext = plateViewModel;
             InitializeComponent();
+            ProcessingPlate processingPlate = new ProcessingPlate();
+            processingPlate.DetectLicensePlate(plateViewModel);
         }
     }
 }

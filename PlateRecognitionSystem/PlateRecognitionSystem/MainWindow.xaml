@@ -31,8 +31,8 @@
         <Label Name="ErrorLabelValue" Content="{Binding Path=CurrentError,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="325,22,0,0" VerticalAlignment="Top"/>
         <Label Name="IterationLabel" Content="Iteration: " HorizontalAlignment="Left" Margin="658,22,0,0" VerticalAlignment="Top"/>
         <Label Name="IterationLabelValue" Content="{Binding Path=CurrentIteration,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="749,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.722,0.667"/>
-        <Button Name="ImageButton" Content="Open Image" HorizontalAlignment="Left" Margin="267,156,0,0" VerticalAlignment="Top" Width="97" Click="ImageButton_Click" IsEnabled="{Binding Path=TrainingSuccess,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/> 
-        <Image Name="LoadedImage" HorizontalAlignment="Left" Height="158" Margin="31,218,0,0" VerticalAlignment="Top" Width="164"/>
+        <Button Name="ImageButton" Content="Open Image" HorizontalAlignment="Left" Margin="267,156,0,0" VerticalAlignment="Top" Width="97" Click="ImageButton_Click" IsEnabled="{Binding Path=TrainingSuccess,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <Image Name="LoadedImage" HorizontalAlignment="Left" Height="158" Margin="31,218,0,0" VerticalAlignment="Top" Width="164" Source="{Binding Image}" />
         <Button Name="RecognizeButton" Content="Recognize Char!" HorizontalAlignment="Left" Margin="267,218,0,0" VerticalAlignment="Top" Width="97"  Height="76" Click="RecognizeButton_Click" IsEnabled="{Binding Path=ImageLoaded,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <Label Name="MatchedHightLabel" Content="Matched Hight:" HorizontalAlignment="Left" Margin="401,218,0,0" VerticalAlignment="Top"/>
         <Label Name="MatchedLowLabel" Content="Matched Low:" HorizontalAlignment="Left" Margin="657,219,0,0" VerticalAlignment="Top"/>

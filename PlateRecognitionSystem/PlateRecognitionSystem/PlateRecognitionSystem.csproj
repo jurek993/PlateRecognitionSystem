@@ -104,8 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\GlobalSettingsModel.cs" />
+    <Compile Include="Model\PlateViewModel.cs" />
     <Compile Include="Model\RecognizeModel.cs" />
-    <Compile Include="Model\ViewModel.cs" />
+    <Compile Include="Model\MainViewModel.cs" />
+    <Compile Include="Model\ViewModelBase.cs" />
     <Compile Include="NeutralNetwork\InitializeNeutralNetwork.cs" />
     <Compile Include="NeutralNetwork\Layers\AbstractHelperClass.cs" />
     <Compile Include="NeutralNetwork\Layers\DoubleLayer.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="PlateWindow.xaml.cs">
       <DependentUpon>PlateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Plate\ProcessingPlate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

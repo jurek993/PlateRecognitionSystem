@@ -5,8 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlateRecognitionSystem"
         mc:Ignorable="d"
-        Title="PlateWindow"  Height="500" Width="800">
+        Title="PlateWindow"  Height="1024" Width="1024">
     <Grid>
-        
+        <Label Content="Mono" Margin="10,11,669.286,431.429"/>
+        <Image x:Name="MonoImage" HorizontalAlignment="Left" Height="151" Margin="10,40,0,0" VerticalAlignment="Top" Width="227" Source="{Binding MonoImage}"/>
+        <Label Content="Canny" Margin="10,184,669.286,258.429"/>
+        <Image Name="CannyImage" HorizontalAlignment="Left" Height="151" Margin="10,218,0,0" VerticalAlignment="Top" Width="227" Source="{Binding CannyImage}"/>
+        <Image HorizontalAlignment="Left" Height="100" Margin="57,-127,0,0" VerticalAlignment="Top" Width="100"/>
+
+        <ListView HorizontalAlignment="Right" ItemsSource="{Binding DetectedPlates}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <Image Source="{Binding}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
     </Grid>
 </Window>
