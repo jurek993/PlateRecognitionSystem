@@ -12,7 +12,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
         private int _outputNum;
         private FirstLayerInput[] _preInputLayer;
         private Output<T>[] _outputLayer;
-        private double _learningRate = 0.2;
+
 
         public SingleLayer(int preInputNum, int outputNum)
         {
@@ -29,8 +29,8 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             {
                 for (int i = 0; i < _preInputNum; i++)
                 {
-                    _preInputLayer[i].Weights[j] += _learningRate * (_outputLayer[j].Error) * _preInputLayer[i].Value;
-                }
+                    _preInputLayer[i].Weights[j] += LearningRate * (_outputLayer[j].Delta) * _preInputLayer[i].Value;
+                } //TODO: dodać learningInput aby miało wpływ na uczenie
             }
         }
 
@@ -58,12 +58,12 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 _outputLayer[i].InputSum = total;
                 _outputLayer[i].output = F(total);
                 _outputLayer[i].Target = _outputLayer[i].Value.CompareTo(output) == 0 ? 1.0 : 0.0;
-                _outputLayer[i].Error = (_outputLayer[i].Target - _outputLayer[i].output) * (_outputLayer[i].output) * (1 - _outputLayer[i].output);
+                _outputLayer[i].Delta = (_outputLayer[i].Target - _outputLayer[i].output) * (_outputLayer[i].output) * (1 - _outputLayer[i].output);
             }
         }
 
 
-        public virtual double GetError()
+        public virtual double GetError() //dla pojedyńczej epok czyli erm erms
         {
 
         double total = 0.0;

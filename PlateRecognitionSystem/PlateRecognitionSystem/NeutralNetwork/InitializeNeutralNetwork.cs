@@ -25,7 +25,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
             if (settingsModel.TrainingSet == null)
                 throw new Exception("Unable to Create Neural Network As There is No Data to Train..");
             int networkInput = settingsModel.AverageImageHeight * settingsModel.AverageImageWidth;
-            int InputNum = (int)((double)(networkInput + settingsModel.NumberOfPatterns) * .33);
+            int FirstLayerNeurons = (int)((double)(networkInput + settingsModel.NumberOfPatterns) * .33);
             switch (settingsModel.NumberOfLayers)
             {
                 case 0:
@@ -33,22 +33,15 @@ namespace PlateRecognitionSystem.NeutralNetwork
     (new SingleLayer<string>(networkInput, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
                     break;
                 case 1:
-                    ////TODO: dowiedzieć się skąd 0.33
                     NeuralNetwork = new NeuralNetwork<string>
-                       (new DoubleLayer<string>(networkInput, InputNum, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
+                       (new DoubleLayer<string>(networkInput, FirstLayerNeurons, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
                     break;
                 case 2:
-                    int HiddenNum = (int)((double)(networkInput + settingsModel.NumberOfPatterns) * .11); ////TODO: to też by się przydało dowiedziec o chuj chodzi. Learning rate 0.2?
+                    int HiddenLayerNeurons = (int)((double)(networkInput + settingsModel.NumberOfPatterns) * .11);
                     NeuralNetwork = new NeuralNetwork<string>
-                        (new TripleLayer<string>(networkInput, InputNum, HiddenNum, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
+                        (new TripleLayer<string>(networkInput, FirstLayerNeurons, HiddenLayerNeurons, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
                     break;
-                    // NeutralNetwork.MaximumError = Double.Parse(textBoxMaxError.Text, CultureInfo.InvariantCulture);
             }
-        }
-
-        public bool CanRecognize(BitmapImage image)
-        {
-            return image != null && NeuralNetwork != null; 
         }
     }
 }

@@ -7,6 +7,7 @@ using PlateRecognitionSystem.Image;
 using PlateRecognitionSystem.Initialize;
 using PlateRecognitionSystem.Model;
 using PlateRecognitionSystem.NeutralNetwork;
+using PlateRecognitionSystem.NeutralNetwork.NeuronComponents;
 using System;
 using System.Configuration;
 using System.Drawing;
@@ -23,7 +24,6 @@ namespace PlateRecognitionSystem
         private GlobalSettings _settings = null;
         private delegate bool TrainingCallBack();
         private InitializeNeutralNetwork _initializeNetwork;
-        private RecognizeModel<string> _recognizeModel;
         public MainViewModel Model;
         public MainWindow()
         {
@@ -80,15 +80,10 @@ namespace PlateRecognitionSystem
 
         private void RecognizeButton_Click(object sender, RoutedEventArgs e)
         {
-            _recognizeModel = new RecognizeModel<string> { MatchedHigh = "?", MatchedLow = "?" };
-            var bitmapImage = Model.Image as BitmapImage;
-            double[] input = ImageProcessing.ToMatrix(bitmapImage.ToBitmap(),
-                _settings.SettingsModel.AverageImageHeight, _settings.SettingsModel.AverageImageWidth);
-            _initializeNetwork.NeuralNetwork.Recognize(input, _recognizeModel);
-            Model.MatchedHightValue = _recognizeModel.MatchedHigh;
-            Model.MatchedLowValue = _recognizeModel.MatchedLow;
-            Model.MatchedHightPercent = Convert.ToInt32((100 * _recognizeModel.OutputHightValue)).ToString() + " %";
-            Model.MatchedLowPercent = Convert.ToInt32((100 * _recognizeModel.OutputLowValue)).ToString() + " %";
+            Model.LogTextBox = String.Empty;
+            InitializeRecognition recognition = new InitializeRecognition(Model, _initializeNetwork, _settings);
+            BitmapImage bitmapImage = Model.Image as BitmapImage;
+            recognition.Recognize(bitmapImage);
         }
 
         private void SaveNetwork_Click(object sender, RoutedEventArgs e)
@@ -119,9 +114,8 @@ namespace PlateRecognitionSystem
             var bitmapImage = Model.Image as BitmapImage;
             Image<Bgr, Byte> imageCV = new Image<Bgr, byte>(bitmapImage.ToBitmap()); 
             Mat mat = imageCV.Mat;
-            PlateWindow plateWindow = new PlateWindow(Model, mat);
+            PlateWindow plateWindow = new PlateWindow(Model, mat, _initializeNetwork, _settings);
             plateWindow.Show();
-
         }
 
 

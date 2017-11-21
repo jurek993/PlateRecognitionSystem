@@ -1,5 +1,8 @@
 ﻿using Emgu.CV;
+using PlateRecognitionSystem.Initialize;
 using PlateRecognitionSystem.Model;
+using PlateRecognitionSystem.NeutralNetwork;
+using PlateRecognitionSystem.NeutralNetwork.NeuronComponents;
 using PlateRecognitionSystem.Plate;
 using System;
 using System.Collections.Generic;
@@ -22,17 +25,20 @@ namespace PlateRecognitionSystem
     /// </summary>
     public partial class PlateWindow : Window
     {
-        public PlateWindow(MainViewModel viewModel, Mat mat)
+        public PlateWindow(MainViewModel viewModel, Mat mat, InitializeNeutralNetwork initializeNetwork, GlobalSettings settings)
         {
             PlateViewModel plateViewModel = new PlateViewModel
             {
                 MainViewModel = viewModel,
                 Mat = mat
             };
+            plateViewModel.MainViewModel.LogTextBox = String.Empty;
             DataContext = plateViewModel;
             InitializeComponent();
             ProcessingPlate processingPlate = new ProcessingPlate();
             processingPlate.DetectLicensePlate(plateViewModel);
+            InitializeRecognition initializeRecognition = new InitializeRecognition(plateViewModel.MainViewModel, initializeNetwork, settings);
+            initializeRecognition.Recognize(plateViewModel.FilteredDetectedCharacters);
         }
     }
 }

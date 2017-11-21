@@ -19,9 +19,11 @@ namespace PlateRecognitionSystem.Model
         private ImageSource _cannyImage;
         private ImageSource _monoImage;
         private ObservableCollection<ImageSource> _detectedPlates;
+        private ObservableCollection<ImageSource> _filteredDetectedCharacters;
         public PlateViewModel()
         {
-          DetectedPlates = new ObservableCollection<ImageSource>();
+            DetectedPlates = new ObservableCollection<ImageSource>();
+            FilteredDetectedCharacters = new ObservableCollection<ImageSource>();
         }
         public ObservableCollection<ImageSource> DetectedPlates
         {
@@ -33,6 +35,20 @@ namespace PlateRecognitionSystem.Model
             set
             {
                 _detectedPlates = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<ImageSource> FilteredDetectedCharacters
+        {
+            get
+            {
+                return _filteredDetectedCharacters;
+            }
+
+            set
+            {
+                _filteredDetectedCharacters = value;
                 OnPropertyChanged();
             }
         }

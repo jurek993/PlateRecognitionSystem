@@ -12,19 +12,26 @@ namespace PlateRecognitionSystem.Image
         //TODO: przerobić na extension
         public static double[] ToMatrix(Bitmap BM, int MatrixRowNumber, int MatrixColumnNumber)
         {
-            double HRate = ((Double)MatrixRowNumber / BM.Height);
-            double WRate = ((Double)MatrixColumnNumber / BM.Width);
-            double[] result = new double[MatrixColumnNumber * MatrixRowNumber];
-
-            for (int r = 0; r < MatrixRowNumber; r++)
+            try
             {
-                for (int c = 0; c < MatrixColumnNumber; c++)
+                double HRate = ((Double)MatrixRowNumber / BM.Height);
+                double WRate = ((Double)MatrixColumnNumber / BM.Width);
+                double[] result = new double[MatrixColumnNumber * MatrixRowNumber];
+
+                for (int r = 0; r < MatrixRowNumber; r++)
                 {
-                    Color color = BM.GetPixel((int)(c / WRate), (int)(r / HRate));
-                    result[r * MatrixColumnNumber + c] = 1 - (color.R * .3 + color.G * .59 + color.B * .11) / 255;
+                    for (int c = 0; c < MatrixColumnNumber; c++)
+                    {
+                        Color color = BM.GetPixel((int)(c / WRate), (int)(r / HRate));
+                        result[r * MatrixColumnNumber + c] = 1 - (color.R * .3 + color.G * .59 + color.B * .11) / 255;
+                    }
                 }
+                return result;
+            } catch(Exception)
+            {
+                return null;
             }
-            return result;
+
         }
     }
 }

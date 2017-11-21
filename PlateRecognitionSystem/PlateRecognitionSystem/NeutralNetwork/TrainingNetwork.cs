@@ -19,7 +19,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
         public TrainingNetwork(NeuralNetwork<T> neuralNetwork, MainViewModel viewModel)
         {
             asyCallBack = new AsyncCallback(TraningCompleted);
-            ManualReset = new ManualResetEvent(false);
+            ManualReset = new ManualResetEvent(false); //TODO: do wywalenia
             _neuralNetwork = neuralNetwork;
             _viewModel = viewModel;
         }

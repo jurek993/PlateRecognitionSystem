@@ -11,7 +11,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
     {
         public double InputSum { get; set; }
         public double output { get; set; }
-        public double Error { get; set; }
+        public double Delta { get; set; } //its off line? 
         public double Target { get; set; }
         public T Value { get; set; }
     }

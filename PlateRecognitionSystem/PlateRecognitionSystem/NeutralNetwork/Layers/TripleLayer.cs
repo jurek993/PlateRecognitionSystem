@@ -20,8 +20,6 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
         private Hidden[] _hiddenLayer;
         private Output<T>[] _outputLayer;
 
-        private double _learningRate = 0.2;
-
         public TripleLayer(int preInputNum, int inputNum, int hiddenNum, int outputNum)
         {
             _preInputNum = preInputNum;
@@ -44,7 +42,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 total = 0.0;
                 for (j = 0; j < _outputNum; j++)
                 {
-                    total += _hiddenLayer[i].Weights[j] * _outputLayer[j].Error;
+                    total += _hiddenLayer[i].Weights[j] * _outputLayer[j].Delta;
                 }
                 _hiddenLayer[i].Error = total;
             }
@@ -66,7 +64,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 for (j = 0; j < _preInputNum; j++)
                 {
                     _preInputLayer[j].Weights[i] +=
-                        _learningRate * _inputLayer[i].Error * _preInputLayer[j].Value;
+                        LearningRate * _inputLayer[i].Error * _preInputLayer[j].Value;
                 }
             }
 
@@ -76,7 +74,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 for (j = 0; j < _inputNum; j++)
                 {
                     _inputLayer[j].Weights[i] +=
-                        _learningRate * _hiddenLayer[i].Error * _inputLayer[j].Output;
+                        LearningRate * _hiddenLayer[i].Error * _inputLayer[j].Output;
                 }
             }
 
@@ -86,7 +84,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 for (j = 0; j < _hiddenNum; j++)
                 {
                     _hiddenLayer[j].Weights[i] +=
-                        _learningRate * _outputLayer[i].Error * _hiddenLayer[j].Output;
+                        LearningRate * _outputLayer[i].Delta * _hiddenLayer[j].Output;
                 }
             }
         }
@@ -139,7 +137,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 _outputLayer[i].InputSum = total;
                 _outputLayer[i].output = F(total);
                 _outputLayer[i].Target = _outputLayer[i].Value.CompareTo(output) == 0 ? 1.0 : 0.0;
-                _outputLayer[i].Error = (_outputLayer[i].Target - _outputLayer[i].output) * (_outputLayer[i].output) * (1 - _outputLayer[i].output);
+                _outputLayer[i].Delta = (_outputLayer[i].Target - _outputLayer[i].output) * (_outputLayer[i].output) * (1 - _outputLayer[i].output);
             }
         }
 

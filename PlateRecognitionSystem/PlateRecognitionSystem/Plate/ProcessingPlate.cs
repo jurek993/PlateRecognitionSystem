@@ -18,6 +18,7 @@ namespace PlateRecognitionSystem.Plate
     class ProcessingPlate
     {
         private PlateViewModel _plateViewModel;
+
         public List<string> DetectLicensePlate(PlateViewModel plateViewModel)
         {
             _plateViewModel = plateViewModel;
@@ -29,7 +30,7 @@ namespace PlateRecognitionSystem.Plate
                 CvInvoke.CvtColor(plateViewModel.Mat, gray, ColorConversion.Bgr2Gray);
                 CvInvoke.Canny(gray, canny, 100, 50, 3, false);
                 plateViewModel.MonoImage = gray.Bitmap.ToBitmapImage();
-                plateViewModel.CannyImage = canny.Bitmap.ToBitmapImage();    
+                plateViewModel.CannyImage = canny.Bitmap.ToBitmapImage();
                 int[,] hierachy = CvInvoke.FindContourTree(canny, contours, ChainApproxMethod.ChainApproxSimple);
                 FindLicensePlate(contours, hierachy, 0, gray, canny,  licenses);
             }
@@ -108,21 +109,19 @@ namespace PlateRecognitionSystem.Plate
                             //removes some pixels from the edge
                             int edgePixelSize = 2;
                             Rectangle newRoi = new Rectangle(new Point(edgePixelSize, edgePixelSize),
-                        tmp2.Size - new Size(2 * edgePixelSize, 2 * edgePixelSize));
+                            tmp2.Size - new Size(2 * edgePixelSize, 2 * edgePixelSize));
                             UMat plate = new UMat(tmp2, newRoi);
-
-                           // TODO: =-> to jest ważne ;) UMat filteredPlate = FilterPlate(plate);
-
-                            
+                            List<UMat> filteredCharaters = FilterPlate.GetCharacters(plate);
                             _plateViewModel.DetectedPlates.Add(plate.Bitmap.ToBitmapImage());
-                          //  licensePlateImagesList.Add(plate);
-                           // filteredLicensePlateImagesList.Add(filteredPlate);
-                           // detectedLicensePlateRegionList.Add(box);
-
+                            foreach (var character in filteredCharaters)
+                            {
+                                _plateViewModel.FilteredDetectedCharacters.Add(character.Bitmap.ToBitmapImage());
+                            }
                         }
                     }
                 }
             }
+            _plateViewModel.FilteredDetectedCharacters.Add(null);
         }
         private static int GetNumberOfChildren(int[,] hierachy, int idx)
         {

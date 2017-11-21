@@ -31,14 +31,21 @@ namespace PlateRecognitionSystem.Extension
 
         public static Bitmap ToBitmap(this BitmapImage bitmapImage)
         {
-            using (MemoryStream outStream = new MemoryStream())
+            try
             {
-                BitmapEncoder encoder = new BmpBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                encoder.Save(outStream);
-                Bitmap bitmap = new Bitmap(outStream); 
-                return new Bitmap(bitmap);
+                using (MemoryStream outStream = new MemoryStream())
+                {
+                    BitmapEncoder encoder = new BmpBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
+                    encoder.Save(outStream);
+                    Bitmap bitmap = new Bitmap(outStream);
+                    return new Bitmap(bitmap);
+                }
+            } catch(ArgumentNullException ex)
+            {
+                return null;
             }
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlateRecognitionSystem.NeutralNetwork.Layers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-public class MainViewModel :  INotifyPropertyChanged
+public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChanged 
 {
     //TODO: przerobić ten viewModel tak jak plateViewModel. Klasa dziezicząca jest ciekawszym pomysłem. do tego podoba mi się implementacja propertyChange
 
@@ -72,6 +73,7 @@ public class MainViewModel :  INotifyPropertyChanged
             if (!Double.Equals(_learningRate, value))
             {
                 _learningRate = value;
+                SetLearningRate(value);
                 OnPropertyChanged("LearningRate");
             }
 
