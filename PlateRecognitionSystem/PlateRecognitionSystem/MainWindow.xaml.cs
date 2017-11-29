@@ -32,7 +32,7 @@ namespace PlateRecognitionSystem
             {
                 LogTextBox = "Uruchomienie programu",
                 MaximumError = Double.Parse(ConfigurationManager.AppSettings["DefaultMaximumError"]),
-                LearningRate = Double.Parse(ConfigurationManager.AppSettings["LearningRate"]),
+                LearningRate = Double.Parse(ConfigurationManager.AppSettings["DefaultLearningRate"]),
                 TrainingSuccess = false,
                 ImageLoaded = false
             };
@@ -45,9 +45,11 @@ namespace PlateRecognitionSystem
         private void comboBoxLayers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var numberOfLayers = int.Parse((comboBoxLayers.SelectedItem as ComboBoxItem).Content.ToString());
-            if (numberOfLayers > 0){
-                _settings.SettingsModel.NumberOfLayers = numberOfLayers - 1 ;
-            } else
+            if (numberOfLayers > 0)
+            {
+                _settings.SettingsModel.NumberOfLayers = numberOfLayers - 1;
+            }
+            else
             {
                 _settings.SettingsModel.NumberOfLayers = numberOfLayers;
             }
@@ -56,8 +58,8 @@ namespace PlateRecognitionSystem
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Model.LogTextBox += "\nRozpoczęcie nauki sieci";
-            _initializeNetwork = new InitializeNeutralNetwork(_settings.SettingsModel);
-            TrainingNetwork<string> trainingNetwork = new TrainingNetwork<string>(_initializeNetwork.NeuralNetwork, Model);
+            _initializeNetwork = new InitializeNeutralNetwork(_settings.SettingsModel, Model);
+            TrainingNetwork trainingNetwork = new TrainingNetwork(_initializeNetwork.NeuralNetwork, Model);
             trainingNetwork.StartTraining();
         }
 
@@ -103,7 +105,7 @@ namespace PlateRecognitionSystem
             if (openFileDialog.ShowDialog() == true)
             {
                 _initializeNetwork = new InitializeNeutralNetwork();
-                _initializeNetwork.NeuralNetwork = new NeuralNetwork<string>();
+                _initializeNetwork.NeuralNetwork = new NeuralNetwork();
                 _initializeNetwork.NeuralNetwork.LoadNetwork(openFileDialog.FileName);
                 Model.TrainingSuccess = true;
             }
@@ -112,7 +114,7 @@ namespace PlateRecognitionSystem
         private void RecognizePlateButton_Click(object sender, RoutedEventArgs e)
         {
             var bitmapImage = Model.Image as BitmapImage;
-            Image<Bgr, Byte> imageCV = new Image<Bgr, byte>(bitmapImage.ToBitmap()); 
+            Image<Bgr, Byte> imageCV = new Image<Bgr, byte>(bitmapImage.ToBitmap());
             Mat mat = imageCV.Mat;
             PlateWindow plateWindow = new PlateWindow(Model, mat, _initializeNetwork, _settings);
             plateWindow.Show();

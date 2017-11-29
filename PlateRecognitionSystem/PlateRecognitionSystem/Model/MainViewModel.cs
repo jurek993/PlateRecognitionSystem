@@ -8,12 +8,23 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChanged 
+public class MainViewModel : AbstractHelperClass, INotifyPropertyChanged
 {
-    //TODO: przerobić ten viewModel tak jak plateViewModel. Klasa dziezicząca jest ciekawszym pomysłem. do tego podoba mi się implementacja propertyChange
-
-
     private string _logTextBox;
+    private ImageSource _image;
+    private double _currentError;
+    private double _maximumError;
+    private double _learningRate;
+    private string _matchedHightValue;
+    private string _matchedLowValue;
+    private string _matchedHightPercent;
+    private string _matchedLowPercent;
+    private bool _imageLoaded;
+    int _distractionPatterns;
+    double _currentIteration;
+    private bool _trainingSuccess;
+    private int _networkInput;
+    private int _networkOutput;
     public string LogTextBox
     {
         get
@@ -24,11 +35,10 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _logTextBox = value;
-            OnPropertyChanged("LogTextBox");
+            OnPropertyChanged();
 
         }
     }
-    double _currentError;
     public double CurrentError
     {
         get
@@ -39,10 +49,9 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _currentError = value;
-            OnPropertyChanged("CurrentError");
+            OnPropertyChanged();
         }
     }
-    private double _maximumError;
     public double MaximumError
     {
         get
@@ -52,15 +61,14 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
 
         set
         {
-            if(!Double.Equals(_maximumError,value))
+            if (!Double.Equals(_maximumError, value))
             {
                 _maximumError = value;
-                OnPropertyChanged("MaximumError");
+                OnPropertyChanged();
             }
 
         }
     }
-    private double _learningRate;
     public double LearningRate
     {
         get
@@ -74,13 +82,10 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
             {
                 _learningRate = value;
                 SetLearningRate(value);
-                OnPropertyChanged("LearningRate");
+                OnPropertyChanged();
             }
-
         }
     }
-
-    private string _matchedHightValue;
     public string MatchedHightValue
     {
         get
@@ -91,11 +96,9 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _matchedHightValue = value;
-            OnPropertyChanged("MatchedHightValue");
+            OnPropertyChanged();
         }
     }
-
-    private string _matchedLowValue;
     public string MatchedLowValue
     {
         get
@@ -106,11 +109,9 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _matchedLowValue = value;
-            OnPropertyChanged("MatchedLowValue");
+            OnPropertyChanged();
         }
     }
-
-    private string _matchedHightPercent;
     public string MatchedHightPercent
     {
         get
@@ -121,11 +122,9 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _matchedHightPercent = value;
-            OnPropertyChanged("MatchedHightPercent");
+            OnPropertyChanged();
         }
     }
-
-    private string _matchedLowPercent;
     public string MatchedLowPercent
     {
         get
@@ -136,11 +135,9 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _matchedLowPercent = value;
-            OnPropertyChanged("MatchedLowPercent");
+            OnPropertyChanged();
         }
     }
-
-    double _currentIteration;
     public double CurrentIteration
     {
         get
@@ -151,12 +148,9 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _currentIteration = value;
-            OnPropertyChanged("CurrentIteration");
+            OnPropertyChanged();
         }
     }
-
-
-    private bool _trainingSuccess;
     public bool TrainingSuccess
     {
         get
@@ -167,12 +161,9 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _trainingSuccess = value;
-            OnPropertyChanged("TrainingSuccess");
+            OnPropertyChanged();
         }
     }
-
-
-    private bool _imageLoaded;
     public bool ImageLoaded
     {
         get
@@ -183,13 +174,10 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _imageLoaded = value;
-            OnPropertyChanged("ImageLoaded");
+            OnPropertyChanged();
         }
     }
-
-    private ImageSource _image;
-    public ImageSource Image
-    {
+    public ImageSource Image {
         get
         {
             return _image;
@@ -197,19 +185,13 @@ public class MainViewModel : AbstractHelperClass<string> ,  INotifyPropertyChang
         set
         {
             _image = value;
-            OnPropertyChanged("Image");
+            OnPropertyChanged();
         }
     }
-
-
-    public event PropertyChangedEventHandler PropertyChanged;
-    private void OnPropertyChanged(String propertyName)
-    {
-        PropertyChangedEventHandler handler = PropertyChanged;
-        if (null != handler)
-        {
-            handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
+    public int NumberOfDistractionPatterns { get { return _distractionPatterns; } set { _distractionPatterns = value; OnPropertyChanged(); } }
+    public int NetworkInput { get { return _networkInput; } set { _networkInput = value; OnPropertyChanged(); } }
+    public int NetworkOutput { get { return _networkOutput; } set { _networkOutput = value; OnPropertyChanged(); } }
+    //public int NumberOf { get { return _distractionPatterns; } set { _distractionPatterns = value; OnPropertyChanged(); } }
+    //public int DistractionPatterns { get { return _distractionPatterns; } set { _distractionPatterns = value; OnPropertyChanged(); } }
 }
 

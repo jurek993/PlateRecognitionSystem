@@ -43,6 +43,12 @@
         <Label Name="MaximumErrorLabel" Content="Maximum Error" HorizontalAlignment="Left" Margin="31,112,0,0" VerticalAlignment="Top" Width="131"/>
         <TextBox Name="MaximumErrorTextBox" HorizontalAlignment="Left" Height="23" Margin="149,116,0,0" TextWrapping="Wrap" Text="{Binding Path=MaximumError,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,Delay=500}" VerticalAlignment="Top" Width="46"/>
         <Button x:Name="RecognizePlateButton" Content="Recognize Plate!" HorizontalAlignment="Left" Margin="267,307,0,0" VerticalAlignment="Top" Width="97"  Height="76" Click="RecognizePlateButton_Click" IsEnabled="{Binding ImageLoaded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <Label x:Name="DistractionTrainingSet" Content="Distraction patterns: " HorizontalAlignment="Left" Margin="452,22,0,0" VerticalAlignment="Top" Width="131"/>
+        <Label x:Name="DistractionTrainingSetValue" Content="{Binding Path=NumberOfDistractionPatterns,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="583,22,0,0" VerticalAlignment="Top" Width="131"/>
+        <Label x:Name="Inputs" Content="Inputs: " HorizontalAlignment="Left" Margin="401,153,0,0" VerticalAlignment="Top" Width="131"/>
+        <Label x:Name="InputsValue" Content="{Binding Path=NetworkInput,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="452,153,0,0" VerticalAlignment="Top" Width="131"/>
+        <Label x:Name="Outputs" Content="Outputs: " HorizontalAlignment="Left" Margin="653,153,0,0" VerticalAlignment="Top" Width="131"/>
+        <Label x:Name="OutputsValue" Content="{Binding Path=NetworkOutput,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="711,153,-47.714,0" VerticalAlignment="Top" Width="131"/>
 
     </Grid>
 

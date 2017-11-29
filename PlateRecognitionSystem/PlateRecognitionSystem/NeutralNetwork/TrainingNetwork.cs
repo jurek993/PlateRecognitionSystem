@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.NeutralNetwork
 {
-    public class TrainingNetwork<T> where T : IComparable<T>
+    public class TrainingNetwork
     {
         private delegate bool TrainingCallBack();
         private AsyncCallback asyCallBack = null;
         private IAsyncResult res = null;
         private ManualResetEvent ManualReset = null;
-        private NeuralNetwork<T> _neuralNetwork;
+        private NeuralNetwork _neuralNetwork;
         private MainViewModel _viewModel;
 
-        public TrainingNetwork(NeuralNetwork<T> neuralNetwork, MainViewModel viewModel)
+        public TrainingNetwork(NeuralNetwork neuralNetwork, MainViewModel viewModel)
         {
             asyCallBack = new AsyncCallback(TraningCompleted);
             ManualReset = new ManualResetEvent(false); //TODO: do wywalenia

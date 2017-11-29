@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 {
     [Serializable]
-    public  class Output<T> where T : IComparable<T>
+    public  class Output
     {
         public double InputSum { get; set; }
         public double output { get; set; }
         public double Delta { get; set; } //its off line? 
         public double Target { get; set; }
-        public T Value { get; set; }
+        public string Value { get; set; }
     }
 }

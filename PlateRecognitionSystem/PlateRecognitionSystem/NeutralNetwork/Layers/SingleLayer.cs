@@ -6,12 +6,12 @@ using PlateRecognitionSystem.Model;
 namespace PlateRecognitionSystem.NeutralNetwork.Layers
 {
     [Serializable]
-    public class SingleLayer<T> :  AbstractHelperClass<T>,  IBackPropagation<T> where T : IComparable<T>
+    public class SingleLayer :  AbstractHelperClass,  IBackPropagation
     {
         private int _preInputNum;
         private int _outputNum;
         private FirstLayerInput[] _preInputLayer;
-        private Output<T>[] _outputLayer;
+        private Output[] _outputLayer;
 
 
         public SingleLayer(int preInputNum, int outputNum)
@@ -19,7 +19,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             _preInputNum = preInputNum;
             _outputNum = outputNum;
             _preInputLayer = new FirstLayerInput[_preInputNum];
-            _outputLayer = new Output<T>[_outputNum];
+            _outputLayer = new Output[_outputNum];
         }
 
         public void BackPropagate()
@@ -36,7 +36,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
 
 
 
-        public void ForwardPropagate(double[] pattern, T output)
+        public void ForwardPropagate(double[] pattern, string output)
         {
             int i, j;
             double total = 0.0;
@@ -74,7 +74,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             return total;
         }
 
-        public void InitializeNetwork(Dictionary<T, double[]> TrainingSet)
+        public void InitializeNetwork(Dictionary<string, double[]> TrainingSet)
         {
             Random rand = new Random();
             for (int i = 0; i < _preInputNum; i++)
@@ -88,14 +88,14 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             }
 
             int k = 0;
-            foreach (KeyValuePair<T, double[]> p in TrainingSet)
+            foreach (KeyValuePair<string, double[]> p in TrainingSet)
             {
-                _outputLayer[k] = new Output<T>();
+                _outputLayer[k] = new Output();
                 _outputLayer[k++].Value = p.Key;
             }
         }
 
-        public void Recognize(double[] Input, RecognizeModel<T> recognizeModel)
+        public void Recognize(double[] Input, RecognizeModel recognizeModel)
         {
             int i, j;
             double total = 0.0;

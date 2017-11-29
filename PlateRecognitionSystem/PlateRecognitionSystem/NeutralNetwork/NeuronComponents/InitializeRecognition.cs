@@ -16,7 +16,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 {
     public class InitializeRecognition
     {
-        private RecognizeModel<string> _recognizeModel;
+        private RecognizeModel _recognizeModel;
         private InitializeNeutralNetwork _initializeNetwork;
         private MainViewModel _viewModel;
         private GlobalSettings _settings;
@@ -50,7 +50,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 
         private void StartRecognize(Bitmap character)
         {
-            _recognizeModel = new RecognizeModel<string> { MatchedHigh = "?", MatchedLow = "?" };
+            _recognizeModel = new RecognizeModel { MatchedHigh = "?", MatchedLow = "?" };
             double[] input = ImageProcessing.ToMatrix(character,
             _settings.SettingsModel.AverageImageHeight, _settings.SettingsModel.AverageImageWidth);
             _initializeNetwork.NeuralNetwork.Recognize(input, _recognizeModel);

@@ -7,14 +7,14 @@ using PlateRecognitionSystem.Model;
 namespace PlateRecognitionSystem.NeutralNetwork.Layers
 {
     [Serializable]
-    public class DoubleLayer<T> : AbstractHelperClass<T>, IBackPropagation<T> where T : IComparable<T>
+    public class DoubleLayer : AbstractHelperClass, IBackPropagation
     {
         private int _preInputNum;
         private int _inputNum;
         private int _outputNum;
         private FirstLayerInput[] _preInputLayer;
         private ClassicInput[] _inputLayer;
-        private Output<T>[] _outputLayer;
+        private Output[] _outputLayer;
 
 
 
@@ -25,7 +25,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             _outputNum = outputNum;
             _preInputLayer = new FirstLayerInput[_preInputNum];
             _inputLayer = new ClassicInput[_inputNum];
-            _outputLayer = new Output<T>[_outputNum];
+            _outputLayer = new Output[_outputNum];
         }
 
         public void BackPropagate()
@@ -64,7 +64,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 }
             }
         }
-        public void ForwardPropagate(double[] pattern, T output)
+        public void ForwardPropagate(double[] pattern, string output)
         {
             int i, j;
             double total = 0.0;
@@ -114,7 +114,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             return total;
         }
 
-        public void InitializeNetwork(Dictionary<T, double[]> TrainingSet)
+        public void InitializeNetwork(Dictionary<string, double[]> TrainingSet)
         {
             int i, j;
             Random rand = new Random();
@@ -139,14 +139,14 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             }
 
             int k = 0;
-            foreach (KeyValuePair<T, double[]> p in TrainingSet)
+            foreach (KeyValuePair<string, double[]> p in TrainingSet)
             {
-                _outputLayer[k] = new Output<T>();
+                _outputLayer[k] = new Output();
                 _outputLayer[k++].Value = p.Key;
             }
         }
 
-        public void Recognize(double[] Input, RecognizeModel<T> recognizeModel)
+        public void Recognize(double[] Input, RecognizeModel recognizeModel)
         {
             int i, j;
             double total = 0.0;

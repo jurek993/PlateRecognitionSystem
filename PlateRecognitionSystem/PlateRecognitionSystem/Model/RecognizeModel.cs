@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.Model
 {
-    public class RecognizeModel<T>  where T : IComparable<T>
+    public class RecognizeModel
     {
-        public T  MatchedHigh { get; set; }
-        public T MatchedLow { get; set; }
+        public string  MatchedHigh { get; set; }
+        public string MatchedLow { get; set; }
         public double OutputHightValue { get; set; } = 0;
         public double OutputLowValue { get; set; } = 0;
     }

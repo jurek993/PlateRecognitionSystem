@@ -11,22 +11,23 @@ using System.Threading.Tasks;
 namespace PlateRecognitionSystem.NeutralNetwork
 {
     [Serializable]
-    public class NeuralNetwork<T> : AbstractHelperClass<T> 
-         where T : IComparable<T>
+    public class NeuralNetwork : AbstractHelperClass
     {
         public int MaximumIteration { get; set; } = 10000;
         public MainViewModel ViewModel { get;set; }
+        private GlobalSettingsModel _settingsModel;
+        private Dictionary<string, double[]> _trainingSet;
+        private IBackPropagation _neuralNet;
+        private Dictionary<string, double[]> _distractionTrainingSet;
+        private RecognizeModel _recognizeModel = new RecognizeModel();
 
-
-        internal Dictionary<T, double[]> TrainingSet;
-
-        private IBackPropagation<T> _neuralNet;
-
-        public NeuralNetwork(IBackPropagation<T> IBackPro, Dictionary<T, double[]> trainingSet)
+        public NeuralNetwork(IBackPropagation IBackPro,  GlobalSettingsModel settingsModel)
         {
             _neuralNet = IBackPro;
-            TrainingSet = trainingSet;
-            _neuralNet.InitializeNetwork(TrainingSet);
+            _trainingSet = settingsModel.TrainingSet;
+            _distractionTrainingSet = settingsModel.DistractionTrainingSet;
+            _neuralNet.InitializeNetwork(_trainingSet);
+            _settingsModel = settingsModel;
         }
         public NeuralNetwork()
         {
@@ -42,12 +43,17 @@ namespace PlateRecognitionSystem.NeutralNetwork
             do
             {
                 currentError = 0;
-                foreach (KeyValuePair<T, double[]> p in TrainingSet)
+                foreach (KeyValuePair<string, double[]> pattern in _trainingSet)
                 {
-
-                    _neuralNet.ForwardPropagate(p.Value, p.Key);
-                    _neuralNet.BackPropagate();
-                    currentError += _neuralNet.GetError();
+                    string stringKey = pattern.Key.ToString();
+                    var dictonaryList = _distractionTrainingSet.Where(x => x.Key.ToString()[0] == stringKey[0]).ToList();
+                    dictonaryList.Add(pattern);
+                    foreach (var dictonary in dictonaryList)
+                    {
+                        _neuralNet.ForwardPropagate(dictonary.Value, pattern.Key);
+                        _neuralNet.BackPropagate();
+                        currentError += _neuralNet.GetError();
+                    }
                 }
 
                 currentIteration++;
@@ -56,6 +62,23 @@ namespace PlateRecognitionSystem.NeutralNetwork
                 {
                     ViewModel.CurrentError = currentError;
                     ViewModel.CurrentIteration = currentIteration;
+                }
+                if (currentIteration % 1 == 0)
+                {
+                    List<string> removed = new List<string>();
+                    foreach (var samplePattern in _settingsModel.SampleTrainingSet)
+                    {
+                        Recognize(samplePattern.Value, _recognizeModel);
+                        if (samplePattern.Key.Equals(_recognizeModel.MatchedHigh) && _recognizeModel.OutputHightValue >= 0.9)
+                        {
+                            removed.Add(samplePattern.Key);
+                            _trainingSet.Remove(samplePattern.Key);
+                        }
+                    }
+                    foreach (var patternToremove in removed)
+                    {
+                        _settingsModel.SampleTrainingSet.Remove(patternToremove);
+                    }
                 }
 
             } while (currentError > ViewModel.MaximumError && currentIteration < MaximumIteration);
@@ -72,7 +95,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
             return true;
         }
 
-        public void Recognize(double[] Input, RecognizeModel<T> recognizeModel)
+        public void Recognize(double[] Input, RecognizeModel recognizeModel)
         {
             _neuralNet.Recognize(Input,  recognizeModel);
         }
@@ -89,7 +112,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
         {
             FileStream fileStream = new FileStream(path, FileMode.Open);
             BinaryFormatter binaryFormatter = new BinaryFormatter();
-            _neuralNet = (IBackPropagation<T>)binaryFormatter.Deserialize(fileStream);
+            _neuralNet = (IBackPropagation)binaryFormatter.Deserialize(fileStream);
             fileStream.Close();
         }
     }

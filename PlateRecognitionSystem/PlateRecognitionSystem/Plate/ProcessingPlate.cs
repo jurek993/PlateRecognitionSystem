@@ -28,7 +28,8 @@ namespace PlateRecognitionSystem.Plate
             using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
             {
                 CvInvoke.CvtColor(plateViewModel.Mat, gray, ColorConversion.Bgr2Gray);
-                CvInvoke.Canny(gray, canny, 100, 50, 3, false);
+                //CvInvoke.Threshold(gray, gray, 14, 255, ThresholdType.BinaryInv);
+                CvInvoke.Canny(gray, canny, 100, 65, 3, false);
                 plateViewModel.MonoImage = gray.Bitmap.ToBitmapImage();
                 plateViewModel.CannyImage = canny.Bitmap.ToBitmapImage();
                 int[,] hierachy = CvInvoke.FindContourTree(canny, contours, ChainApproxMethod.ChainApproxSimple);

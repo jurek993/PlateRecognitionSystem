@@ -10,10 +10,11 @@ namespace PlateRecognitionSystem.NeutralNetwork
 {
     public class InitializeNeutralNetwork
     {
-        public NeuralNetwork<string> NeuralNetwork { get; set; }
-
-        public InitializeNeutralNetwork(GlobalSettingsModel settingsModel)
+        public NeuralNetwork NeuralNetwork { get; set; }
+        private MainViewModel model;
+        public InitializeNeutralNetwork(GlobalSettingsModel settingsModel, MainViewModel mainViewModel)
         {
+            model = mainViewModel;
             CreateNeuralNetwork(settingsModel);
         }
         public InitializeNeutralNetwork()
@@ -24,22 +25,22 @@ namespace PlateRecognitionSystem.NeutralNetwork
         {
             if (settingsModel.TrainingSet == null)
                 throw new Exception("Unable to Create Neural Network As There is No Data to Train..");
-            int networkInput = settingsModel.AverageImageHeight * settingsModel.AverageImageWidth;
-            int FirstLayerNeurons = (int)((double)(networkInput + settingsModel.NumberOfPatterns) * .33);
+            model.NetworkInput = settingsModel.AverageImageHeight * settingsModel.AverageImageWidth;
+            int secondLayerNeurons = (int)((double)(model.NetworkInput + settingsModel.NumberOfPatterns) * .33);
             switch (settingsModel.NumberOfLayers)
             {
                 case 0:
-                    NeuralNetwork = new NeuralNetwork<string>
-    (new SingleLayer<string>(networkInput, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
+                    NeuralNetwork = new NeuralNetwork
+                        (new SingleLayer(model.NetworkInput, settingsModel.NumberOfPatterns), settingsModel);
                     break;
                 case 1:
-                    NeuralNetwork = new NeuralNetwork<string>
-                       (new DoubleLayer<string>(networkInput, FirstLayerNeurons, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
+                    NeuralNetwork = new NeuralNetwork
+                       (new DoubleLayer(model.NetworkInput, secondLayerNeurons, settingsModel.NumberOfPatterns), settingsModel);
                     break;
                 case 2:
-                    int HiddenLayerNeurons = (int)((double)(networkInput + settingsModel.NumberOfPatterns) * .11);
-                    NeuralNetwork = new NeuralNetwork<string>
-                        (new TripleLayer<string>(networkInput, FirstLayerNeurons, HiddenLayerNeurons, settingsModel.NumberOfPatterns), settingsModel.TrainingSet);
+                    int hiddenLayerNeurons = (int)((double)(model.NetworkInput + settingsModel.NumberOfPatterns) * .11);
+                    NeuralNetwork = new NeuralNetwork
+                        (new TripleLayer(model.NetworkInput, secondLayerNeurons, hiddenLayerNeurons, settingsModel.NumberOfPatterns), settingsModel);
                     break;
             }
         }

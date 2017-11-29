@@ -1,7 +1,5 @@
 ﻿using Emgu.CV;
-using PlateRecognitionSystem.Plate;
-using System;
-using System.Collections.Generic;
+using PlateRecognitionSystem.NeutralNetwork.Layers;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -10,7 +8,7 @@ using System.Windows.Media;
 
 namespace PlateRecognitionSystem.Model
 {
-    class PlateViewModel : ViewModelBase
+    class PlateViewModel : AbstractHelperClass
     {
         public MainViewModel MainViewModel { get; set; }
         public Mat Mat { get; set; }

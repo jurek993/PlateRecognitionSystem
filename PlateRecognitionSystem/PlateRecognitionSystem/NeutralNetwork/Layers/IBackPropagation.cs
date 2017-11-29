@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.NeutralNetwork.Layers
 {
-    public interface IBackPropagation<T> where T : IComparable<T>
+    public interface IBackPropagation
     {
         void BackPropagate();
         double GetError();
-        void ForwardPropagate(double[] pattern, T output);
-        void InitializeNetwork(Dictionary<T, double[]> TrainingSet);
-        void Recognize(double[] Input, RecognizeModel<T> recognizeModel);
+        void ForwardPropagate(double[] pattern, string output);
+        void InitializeNetwork(Dictionary<string, double[]> TrainingSet);
+        void Recognize(double[] Input, RecognizeModel recognizeModel);
     }
 }

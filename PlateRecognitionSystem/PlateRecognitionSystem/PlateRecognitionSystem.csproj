@@ -106,7 +106,6 @@
     <Compile Include="Model\PlateViewModel.cs" />
     <Compile Include="Model\RecognizeModel.cs" />
     <Compile Include="Model\MainViewModel.cs" />
-    <Compile Include="Model\ViewModelBase.cs" />
     <Compile Include="NeutralNetwork\InitializeNeutralNetwork.cs" />
     <Compile Include="NeutralNetwork\Layers\AbstractHelperClass.cs" />
     <Compile Include="NeutralNetwork\Layers\DoubleLayer.cs" />
