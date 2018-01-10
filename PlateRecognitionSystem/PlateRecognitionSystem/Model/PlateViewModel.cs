@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using PlateRecognitionSystem.NeutralNetwork.Layers;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace PlateRecognitionSystem.Model
     {
         public MainViewModel MainViewModel { get; set; }
         public Mat Mat { get; set; }
-       
+        public List<List<UMat>>  filteredCharatersInSinglePlate { get; set; }
 
         private ImageSource _cannyImage;
         private ImageSource _monoImage;

@@ -8,6 +8,7 @@ using PlateRecognitionSystem.Initialize;
 using PlateRecognitionSystem.Model;
 using PlateRecognitionSystem.NeutralNetwork;
 using PlateRecognitionSystem.NeutralNetwork.NeuronComponents;
+using PlateRecognitionSystem.Plate;
 using System;
 using System.Configuration;
 using System.Drawing;
@@ -16,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using WebcamControl;
 
 namespace PlateRecognitionSystem
 {
@@ -28,6 +30,7 @@ namespace PlateRecognitionSystem
         public MainWindow()
         {
             InitializeComponent();
+            GarageDBContext dBContext = new GarageDBContext();
             Model = new MainViewModel
             {
                 LogTextBox = "Uruchomienie programu",
@@ -120,6 +123,10 @@ namespace PlateRecognitionSystem
             plateWindow.Show();
         }
 
-
+        private void RecognizePlateFromCameraButton_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            CameraWindow cameraWindow = new CameraWindow(Model, _initializeNetwork, _settings);
+            cameraWindow.Show();
+        }
     }
 }

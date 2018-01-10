@@ -19,6 +19,8 @@ namespace PlateRecognitionSystem.Plate
     {
         public static List<UMat> GetCharacters(UMat plate)
         {
+            bool resultThreshWork = false;
+            double thresholdValue = 100;
             /////ten blok jest używany jak na sztywno chcesz podzielić jakąś mape bitową na osobne literki
             //var path = Path.GetFullPath("C:\\Users\\jurek993\\Desktop\\images.bmp");
             //BitmapImage image = new Bitmap(
@@ -28,23 +30,60 @@ namespace PlateRecognitionSystem.Plate
             /////
 
 
-            UMat thresh = new UMat();
+            UMat plateThresh = new UMat();
             List<UMat> characters = new List<UMat>();
-            CvInvoke.Threshold(plate, thresh, 60, 255, ThresholdType.BinaryInv);
+            do
+            {
+                CvInvoke.Threshold(plate, plateThresh, thresholdValue, 255, ThresholdType.BinaryInv);
+                resultThreshWork = CheckHowManyBlackColor(plateThresh.Bitmap, 20);
+                thresholdValue-=10;
+            } while (!resultThreshWork && thresholdValue > 0);
 
+            
             Size plateSize = plate.Size;
-            using (Mat plateCanny = new Mat())
+            List<Rectangle> rectangles = new List<Rectangle>();
+            rectangles = FindCounturedCharacters(plateThresh, plateSize);
+            if (rectangles.Count <= 5)
+            {
+                using (UMat plateCanny = new UMat())
+                {
+                    CvInvoke.Canny(plate, plateCanny, 100, 50);
+                    rectangles = FindCounturedCharacters(plateCanny, plateSize);
+                    if (rectangles.Count < 5)
+                        rectangles = new List<Rectangle>();
+                }
+            }
+            var orderedRectangles = rectangles.OrderBy(x => x.X).ToList();
+            foreach (var rect in orderedRectangles)
+            {
+                var cloneTresh = plateThresh.Clone();
+                var character = new UMat(cloneTresh, rect);
+                CvInvoke.BitwiseNot(character, character);
+                var result = CheckHowManyBlackColor(character.Bitmap,10);
+                if (result)
+                {
+                    characters.Add(character);
+                }
+                //CvInvoke.Erode(character, character, null, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
+                //CvInvoke.Dilate(character, character, null, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
+
+                //character.Bitmap.Save("C:\\Users\\jurek993\\Desktop\\test\\" + rect.Size.ToString() + rect.Location.ToString()+ ".bmp", ImageFormat.Bmp);
+            }
+            return characters;
+        }
+
+        private static List<Rectangle> FindCounturedCharacters(UMat plate, Size size)
+        {
+            List<Rectangle> rectangles = new List<Rectangle>();
             using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
             {
-                List<Rectangle> rectangles = new List<Rectangle>();
-                CvInvoke.Canny(plate, plateCanny, 100, 50);
-                CvInvoke.FindContours(plateCanny, contours, null, RetrType.External, ChainApproxMethod.ChainApproxSimple);
+                CvInvoke.FindContours(plate, contours, null, RetrType.External, ChainApproxMethod.ChainApproxSimple);
                 for (int i = 1; i < contours.Size; i++)
                 {
-                    using (VectorOfPoint contour = contours[i])
+                    using (VectorOfPoint contour = contours[i]) //TODO: nie wykrywa niekótrych liter. raczej jest to spowodowane przez metode findCounturs. źle wykrywa.. Chcę spróbować nauczyć się wywalić brudy z canny lub z find counturs.
                     {
                         Rectangle rect = CvInvoke.BoundingRectangle(contour);
-                        if (rect.Height > (plateSize.Height >> 1) && rect.Width < plateSize.Width / 4)
+                        if (rect.Height > (size.Height >> 1) && rect.Width < size.Width / 4)
                         {
                             rect.X -= 1; rect.Y -= 1; rect.Width += 3; rect.Height += 3;
                             Rectangle roi = new Rectangle(Point.Empty, plate.Size);
@@ -53,19 +92,34 @@ namespace PlateRecognitionSystem.Plate
                         }
                     }
                 }
-                var orderedRectangles = rectangles.OrderBy(x => x.X).ToList();
-                foreach (var rect in orderedRectangles)
+            }
+            return rectangles;
+        }
+
+        private static bool CheckHowManyBlackColor(Bitmap image, int percent)
+        {
+            int colorInc = 0;
+            for (int column = 0; column < image.Height - 1; column++)
+            {
+                for (int row = 0; row < image.Width - 1; row++)
                 {
-                    var cloneTresh = thresh.Clone();
-                    var character = new UMat(cloneTresh, rect);
-                    //CvInvoke.Erode(character, character, null, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
-                    //CvInvoke.Dilate(character, character, null, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
-                    CvInvoke.BitwiseNot(character, character);
-                    characters.Add(character);
-                    //character.Bitmap.Save("C:\\Users\\jurek993\\Desktop\\test\\" + rect.Size.ToString() + rect.Location.ToString()+ ".bmp", ImageFormat.Bmp);
+                    var color = image.GetPixel(row, column);
+                    var xx = color.R;
+                    if (color.R != 255)
+                    {
+                        colorInc++;
+                    }
                 }
             }
-            return characters;
+            int percentValue = ((image.Height * image.Width * 20)) / 100;
+            if (colorInc > percentValue && colorInc < (image.Height * image.Width) - percentValue) 
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

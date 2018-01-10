@@ -25,20 +25,38 @@ namespace PlateRecognitionSystem
     /// </summary>
     public partial class PlateWindow : Window
     {
+        private MainViewModel _model;
+        private InitializeNeutralNetwork _initializeNeutralNetwork;
+        private GlobalSettings _globalSettings;
+        private Mat _mat;
+        public bool IsRecognise { get; set; }
         public PlateWindow(MainViewModel viewModel, Mat mat, InitializeNeutralNetwork initializeNetwork, GlobalSettings settings)
+        {
+            _model = viewModel;
+            _mat = mat;
+            _initializeNeutralNetwork = initializeNetwork;
+            _globalSettings = settings;
+            RecognizePlate();
+            InitializeComponent();
+        }
+        public PlateWindow()
+        {
+            IsRecognise = false;
+        }
+        public void RecognizePlate()
         {
             PlateViewModel plateViewModel = new PlateViewModel
             {
-                MainViewModel = viewModel,
-                Mat = mat
+                MainViewModel = _model,
+                Mat = _mat
             };
             plateViewModel.MainViewModel.LogTextBox = String.Empty;
             DataContext = plateViewModel;
-            InitializeComponent();
+
             ProcessingPlate processingPlate = new ProcessingPlate();
             processingPlate.DetectLicensePlate(plateViewModel);
-            InitializeRecognition initializeRecognition = new InitializeRecognition(plateViewModel.MainViewModel, initializeNetwork, settings);
-            initializeRecognition.Recognize(plateViewModel.FilteredDetectedCharacters);
+            InitializeRecognition initializeRecognition = new InitializeRecognition(plateViewModel.MainViewModel, _initializeNeutralNetwork, _globalSettings);
+            IsRecognise =  initializeRecognition.Recognize(plateViewModel.filteredCharatersInSinglePlate);
         }
     }
 }

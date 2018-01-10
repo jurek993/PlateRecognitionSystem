@@ -15,30 +15,38 @@ using System.Windows.Media;
 
 namespace PlateRecognitionSystem.Plate
 {
-    class ProcessingPlate
+    internal class ProcessingPlate
     {
         private PlateViewModel _plateViewModel;
 
         public List<string> DetectLicensePlate(PlateViewModel plateViewModel)
         {
-            _plateViewModel = plateViewModel;
-            List<string> licenses = new List<string>();
-            using (Mat gray = new Mat())
-            using (Mat canny = new Mat())
-            using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
+            List<string> licenses;
+            int mode = 0;
+            do
             {
-                CvInvoke.CvtColor(plateViewModel.Mat, gray, ColorConversion.Bgr2Gray);
-                //CvInvoke.Threshold(gray, gray, 14, 255, ThresholdType.BinaryInv);
-                CvInvoke.Canny(gray, canny, 100, 65, 3, false);
-                plateViewModel.MonoImage = gray.Bitmap.ToBitmapImage();
-                plateViewModel.CannyImage = canny.Bitmap.ToBitmapImage();
-                int[,] hierachy = CvInvoke.FindContourTree(canny, contours, ChainApproxMethod.ChainApproxSimple);
-                FindLicensePlate(contours, hierachy, 0, gray, canny,  licenses);
-            }
+                _plateViewModel = plateViewModel;
+                _plateViewModel.filteredCharatersInSinglePlate = new List<List<UMat>>();
+                _plateViewModel.FilteredDetectedCharacters = new ObservableCollection<ImageSource>();
+                _plateViewModel.DetectedPlates = new ObservableCollection<ImageSource>();
+                licenses = new List<string>();
+                using (Mat gray = new Mat())
+                using (Mat canny = new Mat())
+                using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
+                {
+                    CvInvoke.CvtColor(plateViewModel.Mat, gray, ColorConversion.Bgr2Gray);
+                    Image<Bgr, Byte> grayCVcontrasted = PreTreatment(gray, mode);
+                    CvInvoke.Canny(grayCVcontrasted, canny, 250, 100, 3, false);
+                    plateViewModel.MonoImage = grayCVcontrasted.Bitmap.ToBitmapImage();
+                    plateViewModel.CannyImage = canny.Bitmap.ToBitmapImage();
+                    int[,] hierachy = CvInvoke.FindContourTree(canny, contours, ChainApproxMethod.ChainApproxSimple);
+                    FindLicensePlateAndCharacters(contours, hierachy, 0, gray, canny, licenses);
+                }
+                mode++;
+            } while (_plateViewModel.FilteredDetectedCharacters.Count <= 5 && mode <= 3);
             return licenses;
         }
-
-        private void FindLicensePlate(VectorOfVectorOfPoint contours, int[,] hierachy, int idx, Mat gray, Mat canny, List<string> licenses)
+        public void FindLicensePlateAndCharacters(VectorOfVectorOfPoint contours, int[,] hierachy, int idx, Mat gray, Mat canny, List<string> licenses)
         {
             for (; idx >= 0; idx = hierachy[idx, 0])
             {
@@ -48,13 +56,13 @@ namespace PlateRecognitionSystem.Plate
 
                 using (VectorOfPoint contour = contours[idx])
                 {
-                    if (CvInvoke.ContourArea(contour) > 400)
+                    if (CvInvoke.ContourArea(contour) > 200)
                     {
                         if (numberOfChildren < 3)
                         {
-                            //If the contour has less than 3 children, it is not a license plate (assuming license plate has at least 3 charactor)
-                            //However we should search the children of this contour to see if any of them is a license plate
-                            FindLicensePlate(contours, hierachy, hierachy[idx, 2], gray, canny, licenses);
+                            //    If the contour has less than 3 children, it is not a license plate (assuming license plate has at least 3 charactor)
+                            //    However we should search the children of this contour to see if any of them is a license plate
+                            FindLicensePlateAndCharacters(contours, hierachy, hierachy[idx, 2], gray, canny, licenses);
                             continue;
                         }
 
@@ -82,7 +90,7 @@ namespace PlateRecognitionSystem.Plate
                             //However we should search the children of this contour to see if any of them is a license plate
                             //Contour<Point> child = contours.VNext;
                             if (hierachy[idx, 2] > 0)
-                                FindLicensePlate(contours, hierachy, hierachy[idx, 2], gray, canny, licenses);
+                                FindLicensePlateAndCharacters(contours, hierachy, hierachy[idx, 2], gray, canny, licenses);
                             continue;
                         }
 
@@ -106,13 +114,15 @@ namespace PlateRecognitionSystem.Plate
                             double scale = Math.Min(approxSize.Width / box.Size.Width, approxSize.Height / box.Size.Height);
                             Size newSize = new Size((int)Math.Round(box.Size.Width * scale), (int)Math.Round(box.Size.Height * scale));
                             CvInvoke.Resize(tmp1, tmp2, newSize, 0, 0, Inter.Cubic);
-
                             //removes some pixels from the edge
                             int edgePixelSize = 2;
                             Rectangle newRoi = new Rectangle(new Point(edgePixelSize, edgePixelSize),
                             tmp2.Size - new Size(2 * edgePixelSize, 2 * edgePixelSize));
                             UMat plate = new UMat(tmp2, newRoi);
                             List<UMat> filteredCharaters = FilterPlate.GetCharacters(plate);
+
+
+                            _plateViewModel.filteredCharatersInSinglePlate.Add(filteredCharaters);
                             _plateViewModel.DetectedPlates.Add(plate.Bitmap.ToBitmapImage());
                             foreach (var character in filteredCharaters)
                             {
@@ -122,7 +132,6 @@ namespace PlateRecognitionSystem.Plate
                     }
                 }
             }
-            _plateViewModel.FilteredDetectedCharacters.Add(null);
         }
         private static int GetNumberOfChildren(int[,] hierachy, int idx)
         {
@@ -140,5 +149,30 @@ namespace PlateRecognitionSystem.Plate
             return count;
         }
 
+
+        private static Image<Bgr, Byte> PreTreatment(Mat gray, int mode)
+        {
+
+            switch (mode)
+            {
+                case 0:
+                    var contrastedBitmap2 = gray.Bitmap.Contrast(80);
+                    return new Image<Bgr, byte>(contrastedBitmap2);
+                    break;
+                case 1:
+                    CvInvoke.CLAHE(gray, 2, new Size(8, 8), gray);
+                    var contrastedBitmap = gray.Bitmap.Contrast(30);
+                    return new Image<Bgr, byte>(contrastedBitmap);
+                    break;
+                case 2:
+                    CvInvoke.CLAHE(gray, 6, new Size(8, 8), gray);
+                    return new Image<Bgr, byte>(gray.Bitmap);
+                    break;
+                default:
+                    return new Image<Bgr, byte>(gray.Bitmap);
+            }
+        }
+
     }
 }
+

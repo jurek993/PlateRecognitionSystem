@@ -1,10 +1,11 @@
-﻿using PlateRecognitionSystem.Extension;
+﻿using Emgu.CV;
+using PlateRecognitionSystem.Extension;
 using PlateRecognitionSystem.Image;
 using PlateRecognitionSystem.Initialize;
 using PlateRecognitionSystem.Model;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using PlateRecognitionSystem.Database;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -20,32 +21,46 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
         private InitializeNeutralNetwork _initializeNetwork;
         private MainViewModel _viewModel;
         private GlobalSettings _settings;
+        private string _licencePlate = string.Empty;
+        private string _loosedLicencePlate = string.Empty;
+        private GarageDatabase _database;
 
         public InitializeRecognition(MainViewModel viewModel, InitializeNeutralNetwork initializeNeutralNetwork, GlobalSettings globalSettings)
         {
             _viewModel = viewModel;
             _settings = globalSettings;
             _initializeNetwork = initializeNeutralNetwork;
+            _database = new GarageDatabase(_viewModel);
         }
         public void Recognize(BitmapImage character)
         {
             StartRecognize(character.ToBitmap());
         }
 
-        public void Recognize(ObservableCollection<ImageSource> characters)
+        public bool Recognize(List<List<UMat>> charactersInPlates)
         {
-            foreach (var character in characters)
+            foreach (var charactersInSinglePlate in charactersInPlates)
             {
-                if(character!= null)
+                foreach (var characters in charactersInSinglePlate)
                 {
-                    BitmapImage bitmapImageCharacter = character as BitmapImage;
-                    StartRecognize(bitmapImageCharacter.ToBitmap());
+                    if (characters != null)
+                    {
+                        StartRecognize(characters.Bitmap);
+                    }
+                    else
+                    {
+                        _viewModel.LogTextBox += "\n";
+                    }
                 }
-                else
+                _viewModel.LogTextBox += String.Format("\nRozpoznana tablica - {0}\n", _licencePlate);
+                var result = _database.CheckPermission(_licencePlate,_loosedLicencePlate);
+                if (result)
                 {
-                    _viewModel.LogTextBox += "\n";
+                    return true;
                 }
+                _licencePlate = string.Empty;
             }
+            return false;
         }
 
         private void StartRecognize(Bitmap character)
@@ -60,6 +75,10 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
             _viewModel.MatchedLowPercent = Convert.ToInt32((100 * _recognizeModel.OutputLowValue)).ToString() + " %";
             _viewModel.LogTextBox += String.Format("Rozpoznano literę {0} - {1}, Drugie miejsce litera {2} - {3}\n",
                 _viewModel.MatchedHightValue, _viewModel.MatchedHightPercent, _viewModel.MatchedLowValue, _viewModel.MatchedLowPercent);
+            _licencePlate += _viewModel.MatchedHightValue;
+            _loosedLicencePlate += _viewModel.MatchedLowValue;
+
+
         }
     }
 }
