@@ -10,56 +10,83 @@ namespace PlateRecognitionSystem.Database
 {
     public class GarageDatabase
     {
-        private GarageDBContext dBContext = new GarageDBContext();
+        private GarageDBContext _dBContext = new GarageDBContext();
         private MainViewModel _viewModel;
-        public DataForDriverViewModel DataForDriverViewModel { get; set; }
+
+        public BoardDatabase BoardDatabase = new BoardDatabase();
+        public GuestBoardViewModel DataForDriverViewModel { get; set; }
         public GarageDatabase(MainViewModel model)
         {
             _viewModel = model;
         }
-        public bool CheckPermission(string plateNumber, string loosedPlateNumber)
-        { //TODO: ta metoda prawdopodobnie będzie użyta wielokrotnie. Przyda się równiesz jak auto nie ma abonamentu. wjazd każdego auta i tak musi być zapisywany w db
+        public bool CheckPermission(ref string plateNumber, string loosedPlateNumber)
+        {
             Vehicle vehicle = null;
             string[] expectedPlateNumber = null;
-            if (plateNumber!= string.Empty)
+            if (plateNumber != string.Empty && plateNumber.Count() >= 5)
             {
-                vehicle =  dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == plateNumber);
-                if(vehicle == null)
+                string tempPlateNumber = plateNumber;
+                vehicle = _dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == tempPlateNumber);
+                if (vehicle == null)
                 {
-                    expectedPlateNumber = dBContext.Vehicles.Select(x => x.NumberPlate).ToArray().Where(l => SimmilarString.LevenshteinDistance(plateNumber, l) == 1).ToArray();
-                    if(expectedPlateNumber.Count() == 1)
+                    expectedPlateNumber = _dBContext.Vehicles.Select(x => x.NumberPlate).ToArray().Where(l => CalculationHelpers.LevenshteinDistance(tempPlateNumber, l) == 1).ToArray();
+                    if (expectedPlateNumber.Count() == 1)
                     {
-                        if(plateNumber.Count() == expectedPlateNumber[0].Count())
+                        if (plateNumber.Count() == expectedPlateNumber[0].Count())
                         {
                             string expectedString = expectedPlateNumber[0];
                             for (int i = 0; i < plateNumber.Count(); i++)
                             {
                                 if (expectedString[i] == loosedPlateNumber[i] && expectedString[i] != plateNumber[i])
                                 {
-                                    vehicle = dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == expectedString);
+                                    vehicle = _dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == expectedString);
                                     plateNumber = expectedString;
                                 }
-
                             }
                         }
-                        //TODO: nie chciało mi się już. trzeba tego difa porównac z tymi przegranymi w rozpoznawaniu. najlepiej jakby porównało na tym samym miejscu w stringu. może zwykłym forem? 
                     }
                 }
-                
             }
-            
-            if (vehicle != null && vehicle.ExpirationDate >= DateTime.Now)
+            else
             {
-                DataForDriverViewModel = new DataForDriverViewModel
-                {
-                    TestedValue = "Chyba Cię rozpoznałem"
-                };
-                _viewModel.LogTextBox += String.Format("Otwarcie szlabanu dla pojazdu o numerach {0}\n",plateNumber);
-                return true;
-            } //TODO: pamiętać o tym, zeby nie wpuścić przeterminowanego pojazdu, ale wyświetlić info, ze abonament mu się skończył
-            _viewModel.LogTextBox += String.Format("Brak zezwolenia wjazdu dla pojazdu o numerach {0}\n", plateNumber);
-            return false;
+                return false;
+            }
+             return true;
         }
 
+
+        public SingleVisit SaveSingleVisit(string licencePlate)
+        { 
+            SingleVisit visit = _dBContext.SingleVisits.SingleOrDefault(x => x.ExitDate == null && x.Vehicle.NumberPlate == licencePlate);
+            Vehicle vehicle = _dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == licencePlate);
+            if (vehicle == null) //nie ma abo i pierwszy raz wjeżdża
+            {
+                vehicle = new Vehicle { NumberPlate = licencePlate };
+                _dBContext.Vehicles.Add(vehicle);
+            }
+            if (visit == null) //entry
+            {
+                visit = new SingleVisit
+                {
+                    EntryDate = DateTime.Now,
+                    Vehicle = vehicle
+                };
+                _dBContext.SingleVisits.Add(visit);
+            }
+            else //exit
+            {
+                visit.ExitDate = DateTime.Now;
+                if (visit.Vehicle.Owner == null) //nie ma abonamentu
+                {
+                    TimeSpan visitTime = (DateTime)visit.ExitDate - visit.EntryDate;
+                    visit.Price = CalculationHelpers.CauntThePrice(visitTime, _dBContext.Prices.ToList());
+                    visit.Vehicle.TotalPay += (double)visit.Price;
+                }
+                //TODO: przygotować dane do wyświetlenia dla kierowcy
+
+            }
+            _dBContext.SaveChanges();
+            return visit;
+        }
     }
 }

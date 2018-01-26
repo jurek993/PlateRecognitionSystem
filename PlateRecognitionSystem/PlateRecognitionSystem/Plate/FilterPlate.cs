@@ -80,7 +80,7 @@ namespace PlateRecognitionSystem.Plate
                 CvInvoke.FindContours(plate, contours, null, RetrType.External, ChainApproxMethod.ChainApproxSimple);
                 for (int i = 1; i < contours.Size; i++)
                 {
-                    using (VectorOfPoint contour = contours[i]) //TODO: nie wykrywa niekótrych liter. raczej jest to spowodowane przez metode findCounturs. źle wykrywa.. Chcę spróbować nauczyć się wywalić brudy z canny lub z find counturs.
+                    using (VectorOfPoint contour = contours[i]) 
                     {
                         Rectangle rect = CvInvoke.BoundingRectangle(contour);
                         if (rect.Height > (size.Height >> 1) && rect.Width < size.Width / 4)

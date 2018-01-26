@@ -14,7 +14,7 @@ namespace PlateRecognitionSystem.Model
         public string Brand { get; set; }
         public string Model { get; set; }
         public string NumberPlate { get; set; }
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
         public double TotalPay { get; set; }
         public virtual User Owner { get; set; }
     }

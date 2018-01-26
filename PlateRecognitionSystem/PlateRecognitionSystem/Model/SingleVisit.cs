@@ -13,9 +13,10 @@ namespace PlateRecognitionSystem.Model
         //Trzeba założyć, że skuteczność rozpoznawania jest bardzo wysoka :)
         [Key]
         public int ID { get; set; }
-        public Vehicle Vehicle { get; set; }
+        public double?  Price { get; set; }
         public  DateTime EntryDate { get; set; }
         public DateTime? ExitDate { get; set; }
-        public virtual Price Price { get; set; }
+        public virtual Vehicle Vehicle { get; set; }
+
     }
 }

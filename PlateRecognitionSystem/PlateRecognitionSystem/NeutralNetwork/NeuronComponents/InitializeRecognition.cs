@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using PlateRecognitionSystem.SignalRServer;
 
 namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 {
@@ -53,10 +54,29 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
                     }
                 }
                 _viewModel.LogTextBox += String.Format("\nRozpoznana tablica - {0}\n", _licencePlate);
-                var result = _database.CheckPermission(_licencePlate,_loosedLicencePlate);
-                if (result)
+                if(_licencePlate != string.Empty)
                 {
-                    return true;
+                    var result = _database.CheckPermission(ref _licencePlate, _loosedLicencePlate);
+                    if (result)
+                    {
+                        SingleVisit singleVisit = _database.SaveSingleVisit(_licencePlate);
+                        PrepareDataForBoards prepareDataForBoards = new PrepareDataForBoards(singleVisit);
+                        SendDataToBoards sendDataToBoards = new SendDataToBoards();
+                        if(singleVisit.Vehicle.ExpirationDate != null && singleVisit.Vehicle.ExpirationDate >= DateTime.Now)
+                        {
+                            _viewModel.LogTextBox += String.Format("Abonament - Otwarcie szlabanu dla pojazdu o numerach {0}\n", _licencePlate);
+
+                            //TODO: zrobić obsługę dla abonamentów
+                            
+                        }
+                        else
+                        {
+                            _viewModel.LogTextBox += String.Format("Wjazd jednorazowy - Otwarcie szlabanu dla pojazdu o numerach {0}\n", _licencePlate);
+                            var  dataForBoards = prepareDataForBoards.DataForGuestBoard();
+                            sendDataToBoards.GuestData(dataForBoards);
+                        }
+                        return true;
+                    }
                 }
                 _licencePlate = string.Empty;
             }

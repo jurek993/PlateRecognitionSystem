@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PlateRecognitionSystem.Enums;
+using PlateRecognitionSystem.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.Helpers
 {
-    public static class SimmilarString
+    public static class CalculationHelpers
     {
         public static int LevenshteinDistance(string s, string t)
         {
@@ -40,6 +42,25 @@ namespace PlateRecognitionSystem.Helpers
                             d[i - 1, j - 1] + 1 //a substitution
                             );
             return d[n, m];
+        }
+
+        public static double CauntThePrice(TimeSpan visitTime,List<PriceRates> prices)
+        {
+            var minutes = visitTime.TotalMinutes;
+            PriceEnum priceEnum = PriceEnum.OneHour; //cokolwiek
+            double result = 0;
+            prices.RemoveAll(x => x.Minutes == null);
+            foreach (var price in prices)
+            {
+                var tempResult = minutes / (int)price.Minutes;
+                if (result < tempResult)
+                {
+                    result = tempResult;
+                    priceEnum = price.PriceEnum;
+                } 
+            }
+            
+            return Math.Ceiling(result) * (double)prices.SingleOrDefault(x => x.PriceEnum  == priceEnum).Cost;
         }
     }
 }

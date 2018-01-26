@@ -47,12 +47,12 @@ namespace PlateRecognitionSystem
         {
             LoaclWebCamsCollection = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             LocalWebCam = new VideoCaptureDevice(LoaclWebCamsCollection[0].MonikerString);
-            LocalWebCam.NewFrame += new NewFrameEventHandler(Cam_NewFrame);
+            LocalWebCam.NewFrame += new NewFrameEventHandler(CamNewFrame);
 
             LocalWebCam.Start();
         }
 
-        void Cam_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        void CamNewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             try
             {

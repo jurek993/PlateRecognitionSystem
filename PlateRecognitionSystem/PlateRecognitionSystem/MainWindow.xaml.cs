@@ -1,6 +1,7 @@
 ﻿using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Win32;
 using PlateRecognitionSystem.Extension;
 using PlateRecognitionSystem.Image;
@@ -9,6 +10,7 @@ using PlateRecognitionSystem.Model;
 using PlateRecognitionSystem.NeutralNetwork;
 using PlateRecognitionSystem.NeutralNetwork.NeuronComponents;
 using PlateRecognitionSystem.Plate;
+using PlateRecognitionSystem.SignalRServer;
 using System;
 using System.Configuration;
 using System.Drawing;
@@ -31,6 +33,7 @@ namespace PlateRecognitionSystem
         {
             InitializeComponent();
             GarageDBContext dBContext = new GarageDBContext();
+
             Model = new MainViewModel
             {
                 LogTextBox = "Uruchomienie programu",
@@ -103,6 +106,15 @@ namespace PlateRecognitionSystem
 
         private void LoadNetwork_Click(object sender, RoutedEventArgs e)
         {
+            //TODO: to tylko test jest
+            IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<CommunicationHub>();
+
+            var vv = new HelloModel { Age = 37, Molly = "pushed direct from Server kureczka " };
+            hubContext.Clients.All.sendHelloObject(vv);
+            
+            Console.WriteLine("Server Sending sendHelloObject\n");
+            //to wyżej to test
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Neural Network File(*.jur)|*.jur";
             if (openFileDialog.ShowDialog() == true)
