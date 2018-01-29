@@ -46,9 +46,9 @@ namespace PlateRecognitionSystem.NeutralNetwork
                 foreach (KeyValuePair<string, double[]> pattern in _trainingSet)
                 {
                     string stringKey = pattern.Key.ToString();
-                    var dictonaryList = _distractionTrainingSet.Where(x => x.Key.ToString()[0] == stringKey[0]).ToList();
-                    dictonaryList.Add(pattern);
-                    foreach (var dictonary in dictonaryList)
+                    var dictonaryListForOneChar = _distractionTrainingSet.Where(x => x.Key.ToString()[0] == stringKey[0]).ToList();
+                    dictonaryListForOneChar.Add(pattern);
+                    foreach (var dictonary in dictonaryListForOneChar)
                     {
                         _neuralNet.ForwardPropagate(dictonary.Value, pattern.Key);
                         _neuralNet.BackPropagate();
@@ -63,13 +63,13 @@ namespace PlateRecognitionSystem.NeutralNetwork
                     ViewModel.CurrentError = currentError;
                     ViewModel.CurrentIteration = currentIteration;
                 }
-                if (currentIteration % 1 == 0)
+                if (currentIteration % 50 == 0)
                 {
                     List<string> removed = new List<string>();
                     foreach (var samplePattern in _settingsModel.SampleTrainingSet)
                     {
                         Recognize(samplePattern.Value, _recognizeModel);
-                        if (samplePattern.Key.Equals(_recognizeModel.MatchedHigh) && _recognizeModel.OutputHightValue >= 0.9)
+                        if (samplePattern.Key[0].Equals(_recognizeModel.MatchedHigh[0]) && _recognizeModel.OutputHightValue >= 0.9)
                         {
                             removed.Add(samplePattern.Key);
                             _trainingSet.Remove(samplePattern.Key);

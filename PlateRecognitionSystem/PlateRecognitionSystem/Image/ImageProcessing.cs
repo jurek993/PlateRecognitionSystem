@@ -9,7 +9,7 @@ namespace PlateRecognitionSystem.Image
 {
     class ImageProcessing
     {
-        //TODO: przerobić na extension
+        //TODO: maybe better make extension?
         public static double[] ToMatrix(Bitmap BM, int MatrixRowNumber, int MatrixColumnNumber)
         {
             try

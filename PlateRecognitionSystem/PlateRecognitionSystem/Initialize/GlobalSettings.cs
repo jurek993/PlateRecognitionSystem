@@ -13,7 +13,6 @@ using System.Windows;
 namespace PlateRecognitionSystem.Initialize
 {
 
-    //TODO: sprawdz pesa coding style ;) 
 
     public class GlobalSettings
     {
@@ -57,15 +56,10 @@ namespace PlateRecognitionSystem.Initialize
                 }
                 SettingsModel.AverageImageHeight /= (SettingsModel.NumberOfPatterns + distractionImages.Length);
                 SettingsModel.AverageImageWidth /= (SettingsModel.NumberOfPatterns + distractionImages.Length);
-                //int networkInput = SettingsModel.AverageImageWidth * SettingsModel.AverageImageHeight;
-
-                // TODO: dodac do do UI textBoxInputUnit.Text = ((int)((double)(networkInput + NumOfPatterns) * .33)).ToString();
-                // textBoxHiddenUnit.Text = ((int)((double)(networkInput + NumOfPatterns) * .11)).ToString();
-                // textBoxOutputUnit.Text = NumOfPatterns.ToString();
             }
             catch (Exception ex)
             {
-                //TODO: dodać logi
+                //TODO: add logs
                 MessageBox.Show("Error Initializing Settings: " + ex.Message, "Error");
             }
             _viewModel.LogTextBox += " - Skończone!\r\n";

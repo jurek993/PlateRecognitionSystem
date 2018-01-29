@@ -9,8 +9,6 @@ namespace PlateRecognitionSystem.Model
 {
     public class SingleVisit
     {
-        //TODO: a co jeśli wjeżdzając pojazd zostanie źle rozpoznany i przy wyjeździe rozpozna dobrze? Wtedy nie będzie zgodności. Jednak na razie nie ma czasu się tym zająć. 
-        //Trzeba założyć, że skuteczność rozpoznawania jest bardzo wysoka :)
         [Key]
         public int ID { get; set; }
         public double?  Price { get; set; }

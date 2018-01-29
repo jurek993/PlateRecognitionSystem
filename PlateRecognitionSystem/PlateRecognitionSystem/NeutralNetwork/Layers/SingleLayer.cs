@@ -30,7 +30,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 for (int i = 0; i < _preInputNum; i++)
                 {
                     _preInputLayer[i].Weights[j] += LearningRate * (_outputLayer[j].Delta) * _preInputLayer[i].Value;
-                } //TODO: dodać learningInput aby miało wpływ na uczenie
+                } //TODO: dodać learningInput aby miało wpływ na uczenie  ?? nie wiem co miałem na myśli....
             }
         }
 

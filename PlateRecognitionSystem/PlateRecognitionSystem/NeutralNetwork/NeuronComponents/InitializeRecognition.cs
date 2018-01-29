@@ -109,7 +109,12 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 
         private void SendNormalMessageAfter10Second(TypeOfBoards boardName)
         {
+            //it's not good solution. In real garage this block everething
             System.Threading.Thread.Sleep(10000);
+            if(boardName == TypeOfBoards.ExitBoard) 
+            {
+                _sendDataToBoards.NormalMessage(_prepareDataForBoards.DataForNormalMessage(TypeOfBoards.EnterBoard));
+            }
             var message = _prepareDataForBoards.DataForNormalMessage(boardName);
             _sendDataToBoards.NormalMessage(message);
         }
