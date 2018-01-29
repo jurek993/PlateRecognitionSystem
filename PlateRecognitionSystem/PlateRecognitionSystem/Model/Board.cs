@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlateRecognitionSystem.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace PlateRecognitionSystem.Model
         [Key]
         public int ID { get; set; }
         [Required]
-        public string FunctionName { get; set; }
+        public TypeOfBoards FunctionName { get; set; }
         [Required]
         public string Token { get; set; }
     }

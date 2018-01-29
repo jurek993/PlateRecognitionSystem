@@ -1,4 +1,5 @@
 ﻿using PlateRecognitionSystem.Database;
+using PlateRecognitionSystem.Enums;
 using PlateRecognitionSystem.Model;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace PlateRecognitionSystem.SignalRServer
             //if wjazd lub wyjazd
             if (_visit.ExitDate == null)
             {
-                var boards = _database.GetListOfBoards("EntryTable");
+                var boards = _database.GetListOfBoards(TypeOfBoards.EnterBoard);
                 stringDate = _visit.EntryDate.ToShortTimeString();
                 stringDate += " " + _visit.EntryDate.ToShortDateString();
                 GuestBoardViewModel guest = new GuestBoardViewModel
@@ -51,7 +52,7 @@ namespace PlateRecognitionSystem.SignalRServer
                 stringDate += " " + date.ToShortDateString();
                 GuestBoardViewModel guest = new GuestBoardViewModel
                 {
-                    Boards = _database.GetListOfBoards("ExitTable"),
+                    Boards = _database.GetListOfBoards(TypeOfBoards.ExitBoard),
                     EntryOrExitDate = stringDate,
                     LicencePlate = _visit.Vehicle.NumberPlate,
                     Cost = (double)_visit.Price
@@ -63,7 +64,7 @@ namespace PlateRecognitionSystem.SignalRServer
         public SubscriptionBoardViewModel DataForSubscriptionViewModel()
         {
             string stringDate = String.Empty;
-            //if wjazd lub wyjazd
+            //enter
             if (_visit.ExitDate == null)
             {
                 stringDate = _visit.EntryDate.ToShortTimeString();
@@ -71,7 +72,7 @@ namespace PlateRecognitionSystem.SignalRServer
                 var expirationDate = (DateTime)_visit.Vehicle.ExpirationDate;
                 SubscriptionBoardViewModel subscriber = new SubscriptionBoardViewModel
                 {
-                    Boards = _database.GetListOfBoards("EntryTable"),
+                    Boards = _database.GetListOfBoards(TypeOfBoards.EnterBoard),
                     EntryOrExitDate = stringDate,
                     LicencePlate = _visit.Vehicle.NumberPlate,
                     ExpirationDate = expirationDate.ToShortDateString(),
@@ -79,7 +80,7 @@ namespace PlateRecognitionSystem.SignalRServer
                 };
                 return subscriber;
             }
-            else
+            else //exit
             {
                 var date = (DateTime)_visit.ExitDate;
                 stringDate = date.ToShortTimeString();
@@ -87,7 +88,7 @@ namespace PlateRecognitionSystem.SignalRServer
                 var expirationDate = (DateTime)_visit.Vehicle.ExpirationDate;
                 SubscriptionBoardViewModel subscriber = new SubscriptionBoardViewModel
                 {
-                    Boards = _database.GetListOfBoards("ExitTable"),
+                    Boards = _database.GetListOfBoards(TypeOfBoards.ExitBoard),
                     EntryOrExitDate = stringDate,
                     LicencePlate = _visit.Vehicle.NumberPlate,
                     ExpirationDate = expirationDate.ToShortDateString(),
@@ -97,11 +98,11 @@ namespace PlateRecognitionSystem.SignalRServer
             }
         }
 
-        public NormalBoardViewModel DataForNormalMessage(string boardName)
+        public NormalBoardViewModel DataForNormalMessage(TypeOfBoards boardName)
         {
             return new NormalBoardViewModel
             {
-                FreePlaces = 40,
+                FreePlaces = _database.GetFreeSpaceInGarage(),
                 Boards = _database.GetListOfBoards(boardName)
             };
         }

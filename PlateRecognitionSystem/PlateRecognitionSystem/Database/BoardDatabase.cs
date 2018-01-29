@@ -1,4 +1,5 @@
-﻿using PlateRecognitionSystem.Model;
+﻿using PlateRecognitionSystem.Enums;
+using PlateRecognitionSystem.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace PlateRecognitionSystem.Database
         private GarageDBContext _dBContext = new GarageDBContext();
         private MainViewModel _viewModel;
 
-        public void AddTableToDatabase(string name, string token) 
+        public void AddTableToDatabase(TypeOfBoards name, string token) 
         {
             _dBContext.InformationBoards.Add(new Board
             {
@@ -34,7 +35,7 @@ namespace PlateRecognitionSystem.Database
             }
         }
 
-        public List<Board> GetListOfBoards(string FunctionName)
+        public List<Board> GetListOfBoards(TypeOfBoards FunctionName)
         {
             var boards = _dBContext.InformationBoards.Where(x => x.FunctionName == FunctionName);
             return boards.ToList();
@@ -43,6 +44,24 @@ namespace PlateRecognitionSystem.Database
         public List<Board> GetListOfBoards()
         {   
             return _dBContext.InformationBoards.ToList();
+        }
+        public int GetFreeSpaceInGarage()
+        {
+          
+            var garageInformation = _dBContext.GarageInformation.FirstOrDefault();
+            if (garageInformation != null)
+            {
+               var freeSpace =  garageInformation.Capacity - garageInformation.Occupancy;
+                if (freeSpace > 0)
+                {
+                    return freeSpace;
+                }
+                else
+                {
+                    return 0; //I scare about minus value ;)
+                }
+            }
+            return 0;
         }
     }
 }

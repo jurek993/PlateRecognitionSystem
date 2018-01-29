@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.SignalR;
 using PlateRecognitionSystem.Database;
+using PlateRecognitionSystem.Enums;
 using PlateRecognitionSystem.Model;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,12 @@ namespace PlateRecognitionSystem.SignalRServer
 
         public void NameOfTheTable(string tableName)
         {
+            Enum.TryParse(tableName, out TypeOfBoards boardType);
             Clients.All.nameOfTheTable(tableName);
-            _boardDatabase.AddTableToDatabase(tableName, Context.ConnectionId);
+            _boardDatabase.AddTableToDatabase(boardType, Context.ConnectionId);
             SendDataToBoards sendDataToBoards = new SendDataToBoards();
             PrepareDataForBoards prepareDataForBoards = new PrepareDataForBoards();
-            var model = prepareDataForBoards.DataForNormalMessage(tableName);
+            var model = prepareDataForBoards.DataForNormalMessage(boardType);
             sendDataToBoards.NormalMessage(model);
         }
 
@@ -41,7 +43,7 @@ namespace PlateRecognitionSystem.SignalRServer
 
         public void NormalMessage(NormalBoardViewModel model)
         {
-            //TODO: ilość wolnego miejsca na parkinkgu 
+
         }
 
         public override Task OnConnected()

@@ -1,4 +1,5 @@
-﻿using PlateRecognitionSystem.Helpers;
+﻿using PlateRecognitionSystem.Enums;
+using PlateRecognitionSystem.Helpers;
 using PlateRecognitionSystem.Model;
 using System;
 using System.Collections.Generic;
@@ -80,13 +81,25 @@ namespace PlateRecognitionSystem.Database
                 {
                     TimeSpan visitTime = (DateTime)visit.ExitDate - visit.EntryDate;
                     visit.Price = CalculationHelpers.CauntThePrice(visitTime, _dBContext.Prices.ToList());
-                    visit.Vehicle.TotalPay += (double)visit.Price;
-                }
-                //TODO: przygotować dane do wyświetlenia dla kierowcy
-
+                    visit.Vehicle.TotalPay += (double)visit.Price;                }
             }
             _dBContext.SaveChanges();
             return visit;
+        }
+
+        public void ChangeTheGarageOccupancy(TypeOfBoards type)
+        {
+            switch (type)
+            {
+                case TypeOfBoards.EnterBoard:
+                    _dBContext.GarageInformation.FirstOrDefault().Occupancy++;
+                    _dBContext.SaveChanges();
+                    break;
+                case TypeOfBoards.ExitBoard:
+                    _dBContext.GarageInformation.FirstOrDefault().Occupancy--;
+                    _dBContext.SaveChanges();
+                    break;
+            }
         }
     }
 }

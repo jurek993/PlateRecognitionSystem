@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PlateRecognitionSystem.SignalRServer;
+using PlateRecognitionSystem.Enums;
 
 namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
 {
@@ -66,17 +67,21 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
                         _sendDataToBoards = new SendDataToBoards();
                         if(singleVisit.Vehicle.ExpirationDate != null && singleVisit.Vehicle.ExpirationDate >= DateTime.Now)
                         {
-                            _viewModel.LogTextBox += String.Format("Abonament - Otwarcie szlabanu dla pojazdu o numerach {0}\n", _licencePlate);
-                            var dataForBoards = _prepareDataForBoards.DataForSubscriptionViewModel();
+                            _viewModel.LogTextBox += String.Format("Abonament - Akcja dla pojazdu o numerach {0}\n", _licencePlate);
+                            SubscriptionBoardViewModel dataForBoards = _prepareDataForBoards.DataForSubscriptionViewModel();
                             _sendDataToBoards.SubscriberData(dataForBoards);
-                            SendNormalMessageAfter10Second(dataForBoards.Boards.SingleOrDefault().FunctionName);
+                            var boardName = dataForBoards.Boards.SingleOrDefault().FunctionName; //TODO: na wyjeździe nie odświeża ilośc wolnych miejsc na wieździe 
+                            _database.ChangeTheGarageOccupancy(boardName);
+                            SendNormalMessageAfter10Second(boardName);
                         }
                         else
                         {
-                            _viewModel.LogTextBox += String.Format("Wjazd jednorazowy - Otwarcie szlabanu dla pojazdu o numerach {0}\n", _licencePlate);
+                            _viewModel.LogTextBox += String.Format("Klient jednorazowy - Akcja dla pojazdu o numerach {0}\n", _licencePlate);
                             var  dataForBoards = _prepareDataForBoards.DataForGuestBoard();
                             _sendDataToBoards.GuestData(dataForBoards);
-                            SendNormalMessageAfter10Second(dataForBoards.Boards.SingleOrDefault().FunctionName);
+                            var boardName = dataForBoards.Boards.SingleOrDefault().FunctionName;
+                            _database.ChangeTheGarageOccupancy(boardName);
+                            SendNormalMessageAfter10Second(boardName);
                         }
                         return true;
                     }
@@ -102,7 +107,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
             _loosedLicencePlate += _viewModel.MatchedLowValue;
         }
 
-        private void SendNormalMessageAfter10Second(string boardName)
+        private void SendNormalMessageAfter10Second(TypeOfBoards boardName)
         {
             System.Threading.Thread.Sleep(10000);
             var message = _prepareDataForBoards.DataForNormalMessage(boardName);
