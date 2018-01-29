@@ -106,15 +106,6 @@ namespace PlateRecognitionSystem
 
         private void LoadNetwork_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: to tylko test jest
-            IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<CommunicationHub>();
-
-            var vv = new HelloModel { Age = 37, Molly = "pushed direct from Server kureczka " };
-            hubContext.Clients.All.sendHelloObject(vv);
-            
-            Console.WriteLine("Server Sending sendHelloObject\n");
-            //to wyżej to test
-
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Neural Network File(*.jur)|*.jur";
             if (openFileDialog.ShowDialog() == true)

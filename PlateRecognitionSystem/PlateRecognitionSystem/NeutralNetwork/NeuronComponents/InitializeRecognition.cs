@@ -25,6 +25,8 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
         private string _licencePlate = string.Empty;
         private string _loosedLicencePlate = string.Empty;
         private GarageDatabase _database;
+        private PrepareDataForBoards _prepareDataForBoards;
+        private SendDataToBoards _sendDataToBoards;
 
         public InitializeRecognition(MainViewModel viewModel, InitializeNeutralNetwork initializeNeutralNetwork, GlobalSettings globalSettings)
         {
@@ -60,20 +62,21 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
                     if (result)
                     {
                         SingleVisit singleVisit = _database.SaveSingleVisit(_licencePlate);
-                        PrepareDataForBoards prepareDataForBoards = new PrepareDataForBoards(singleVisit);
-                        SendDataToBoards sendDataToBoards = new SendDataToBoards();
+                        _prepareDataForBoards = new PrepareDataForBoards(singleVisit);
+                        _sendDataToBoards = new SendDataToBoards();
                         if(singleVisit.Vehicle.ExpirationDate != null && singleVisit.Vehicle.ExpirationDate >= DateTime.Now)
                         {
                             _viewModel.LogTextBox += String.Format("Abonament - Otwarcie szlabanu dla pojazdu o numerach {0}\n", _licencePlate);
-
-                            //TODO: zrobić obsługę dla abonamentów
-                            
+                            var dataForBoards = _prepareDataForBoards.DataForSubscriptionViewModel();
+                            _sendDataToBoards.SubscriberData(dataForBoards);
+                            SendNormalMessageAfter10Second(dataForBoards.Boards.SingleOrDefault().FunctionName);
                         }
                         else
                         {
                             _viewModel.LogTextBox += String.Format("Wjazd jednorazowy - Otwarcie szlabanu dla pojazdu o numerach {0}\n", _licencePlate);
-                            var  dataForBoards = prepareDataForBoards.DataForGuestBoard();
-                            sendDataToBoards.GuestData(dataForBoards);
+                            var  dataForBoards = _prepareDataForBoards.DataForGuestBoard();
+                            _sendDataToBoards.GuestData(dataForBoards);
+                            SendNormalMessageAfter10Second(dataForBoards.Boards.SingleOrDefault().FunctionName);
                         }
                         return true;
                     }
@@ -97,8 +100,13 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
                 _viewModel.MatchedHightValue, _viewModel.MatchedHightPercent, _viewModel.MatchedLowValue, _viewModel.MatchedLowPercent);
             _licencePlate += _viewModel.MatchedHightValue;
             _loosedLicencePlate += _viewModel.MatchedLowValue;
+        }
 
-
+        private void SendNormalMessageAfter10Second(string boardName)
+        {
+            System.Threading.Thread.Sleep(10000);
+            var message = _prepareDataForBoards.DataForNormalMessage(boardName);
+            _sendDataToBoards.NormalMessage(message);
         }
     }
 }

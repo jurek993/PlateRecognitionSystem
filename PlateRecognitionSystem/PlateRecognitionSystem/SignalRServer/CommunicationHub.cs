@@ -22,36 +22,24 @@ namespace PlateRecognitionSystem.SignalRServer
         {
             Clients.All.nameOfTheTable(tableName);
             _boardDatabase.AddTableToDatabase(tableName, Context.ConnectionId);
+            SendDataToBoards sendDataToBoards = new SendDataToBoards();
+            PrepareDataForBoards prepareDataForBoards = new PrepareDataForBoards();
+            var model = prepareDataForBoards.DataForNormalMessage(tableName);
+            sendDataToBoards.NormalMessage(model);
         }
 
 
-        public void SendHelloObject(HelloModel hello)
-        {
-            Console.WriteLine("Hub hello {0} {1}\n", hello.Molly, hello.Age);
-            Clients.All.sendHelloObject(hello);
-        }
-
-        public void EntryGuestVehicleMessage(GuestBoardViewModel model)
+        public void GuestVehicleMessage(GuestBoardViewModel model)
         {
 
         }
 
-        public void ExitGuestVehicleMessage(GuestBoardViewModel model)
+        public void SubscriptionVehicleMessage(SubscriptionBoardViewModel model)
         {
 
         }
 
-        public void EntrySubscriptionVehicleMessage()
-        {
-
-        }
-
-        public void ExitSubscriptionVehicleMessage()
-        {
-
-        }
-
-        public void NormalMessage()
+        public void NormalMessage(NormalBoardViewModel model)
         {
             //TODO: ilość wolnego miejsca na parkinkgu 
         }

@@ -39,5 +39,10 @@ namespace PlateRecognitionSystem.Database
             var boards = _dBContext.InformationBoards.Where(x => x.FunctionName == FunctionName);
             return boards.ToList();
         }
+
+        public List<Board> GetListOfBoards()
+        {   
+            return _dBContext.InformationBoards.ToList();
+        }
     }
 }
