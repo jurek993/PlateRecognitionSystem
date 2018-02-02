@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlateRecognitionSystem"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="Plate Recognition System" Height="524" Width="800">
     <Grid>
         <Menu DockPanel.Dock="Top" RenderTransformOrigin="0.43,0.346">
             <MenuItem Header="_File">

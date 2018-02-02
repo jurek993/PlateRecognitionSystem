@@ -97,14 +97,17 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
             double[] input = ImageProcessing.ToMatrix(character,
             _settings.SettingsModel.AverageImageHeight, _settings.SettingsModel.AverageImageWidth);
             _initializeNetwork.NeuralNetwork.Recognize(input, _recognizeModel);
-            _viewModel.MatchedHightValue = _recognizeModel.MatchedHigh;
-            _viewModel.MatchedLowValue = _recognizeModel.MatchedLow;
-            _viewModel.MatchedHightPercent = Convert.ToInt32((100 * _recognizeModel.OutputHightValue)).ToString() + " %";
-            _viewModel.MatchedLowPercent = Convert.ToInt32((100 * _recognizeModel.OutputLowValue)).ToString() + " %";
-            _viewModel.LogTextBox += String.Format("Rozpoznano literę {0} - {1}, Drugie miejsce litera {2} - {3}\n",
-                _viewModel.MatchedHightValue, _viewModel.MatchedHightPercent, _viewModel.MatchedLowValue, _viewModel.MatchedLowPercent);
-            _licencePlate += _viewModel.MatchedHightValue;
-            _loosedLicencePlate += _viewModel.MatchedLowValue;
+            if(_recognizeModel.MatchedHigh != "#")
+            {
+                _viewModel.MatchedHightValue = _recognizeModel.MatchedHigh;
+                _viewModel.MatchedLowValue = _recognizeModel.MatchedLow;
+                _viewModel.MatchedHightPercent = Convert.ToInt32((100 * _recognizeModel.OutputHightValue)).ToString() + " %";
+                _viewModel.MatchedLowPercent = Convert.ToInt32((100 * _recognizeModel.OutputLowValue)).ToString() + " %";
+                _viewModel.LogTextBox += String.Format("Rozpoznano literę {0} - {1}, Drugie miejsce litera {2} - {3}\n",
+                    _viewModel.MatchedHightValue, _viewModel.MatchedHightPercent, _viewModel.MatchedLowValue, _viewModel.MatchedLowPercent);
+                _licencePlate += _viewModel.MatchedHightValue;
+                _loosedLicencePlate += _viewModel.MatchedLowValue;
+            }
         }
 
         private void SendNormalMessageAfter10Second(TypeOfBoards boardName)

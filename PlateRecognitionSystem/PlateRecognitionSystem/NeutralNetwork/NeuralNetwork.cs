@@ -45,8 +45,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
                 currentError = 0;
                 foreach (KeyValuePair<string, double[]> pattern in _trainingSet)
                 {
-                    string stringKey = pattern.Key.ToString();
-                    var dictonaryListForOneChar = _distractionTrainingSet.Where(x => x.Key.ToString()[0] == stringKey[0]).ToList();
+                    var dictonaryListForOneChar = _distractionTrainingSet.Where(x => x.Key[0].ToString() == pattern.Key[0].ToString()).ToList();
                     dictonaryListForOneChar.Add(pattern);
                     foreach (var dictonary in dictonaryListForOneChar)
                     {
@@ -66,6 +65,7 @@ namespace PlateRecognitionSystem.NeutralNetwork
                 if (currentIteration % 50 == 0)
                 {
                     List<string> removed = new List<string>();
+                    bool isOver = true;
                     foreach (var samplePattern in _settingsModel.SampleTrainingSet)
                     {
                         Recognize(samplePattern.Value, _recognizeModel);
@@ -74,11 +74,19 @@ namespace PlateRecognitionSystem.NeutralNetwork
                             removed.Add(samplePattern.Key);
                             _trainingSet.Remove(samplePattern.Key);
                         }
+                        else
+                        {
+                            isOver = false;
+                        }
                     }
-                    foreach (var patternToremove in removed)
+                    if (isOver)
                     {
-                        _settingsModel.SampleTrainingSet.Remove(patternToremove);
+                        foreach (var patternToremove in removed)
+                        {
+                            _settingsModel.SampleTrainingSet.Remove(patternToremove);
+                        }
                     }
+
                 }
 
             } while (currentError > ViewModel.MaximumError && currentIteration < MaximumIteration);

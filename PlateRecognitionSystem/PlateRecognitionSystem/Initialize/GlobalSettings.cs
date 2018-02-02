@@ -91,6 +91,7 @@ namespace PlateRecognitionSystem.Initialize
 
         private void AddImageToDictonary(string pattern, Dictionary<string,double[]> dictionary) 
         {
+            var charName = Path.GetFileNameWithoutExtension(pattern);
             Bitmap temp = new Bitmap(pattern);
             dictionary.Add(Path.GetFileNameWithoutExtension(pattern),
                 ImageProcessing.ToMatrix(temp, SettingsModel.AverageImageHeight, SettingsModel.AverageImageWidth));

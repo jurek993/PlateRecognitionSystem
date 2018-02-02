@@ -67,7 +67,7 @@ namespace PlateRecognitionSystem.Plate
                 //CvInvoke.Erode(character, character, null, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
                 //CvInvoke.Dilate(character, character, null, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
 
-                //character.Bitmap.Save("C:\\Users\\jurek993\\Desktop\\test\\" + rect.Size.ToString() + rect.Location.ToString()+ ".bmp", ImageFormat.Bmp);
+                character.Bitmap.Save("C:\\Users\\jurek993\\Desktop\\test\\" + rect.Size.ToString() + rect.Location.ToString()+ ".bmp", ImageFormat.Bmp);
             }
             return characters;
         }
