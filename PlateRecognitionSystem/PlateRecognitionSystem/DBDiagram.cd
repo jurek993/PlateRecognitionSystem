@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PlateRecognitionSystem.Database.BoardDatabase">
+    <Position X="0.5" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAABQAAAAAAAAYAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\BoardDatabase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlateRecognitionSystem.Database.GarageDatabase">
+    <Position X="7.25" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAQAAAAQAQAAAAAAAAAAAAAQAAAEAAAAAAAAA=</HashCode>
+      <FileName>Database\GarageDatabase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlateRecognitionSystem.GarageDBContext">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACQAAQAQgAAAIAAAAEAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\GarageDBContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

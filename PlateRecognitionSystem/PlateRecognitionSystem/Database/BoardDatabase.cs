@@ -6,28 +6,28 @@ using System.Linq;
 
 namespace PlateRecognitionSystem.Database
 {
-    public class BoardDatabase
+    public class BoardDatabase : GarageDBContext
     {
-        private GarageDBContext _dBContext = new GarageDBContext();
+      //  private GarageDBContext _dBContext = new GarageDBContext();
         private MainViewModel _viewModel;
 
         public void AddTableToDatabase(TypeOfBoards name, string token) 
         {
-            _dBContext.InformationBoards.Add(new Board
+            InformationBoards.Add(new Board
             {
                 FunctionName = name,
                 Token = token
             });
-            _dBContext.SaveChanges();
+            SaveChanges();
         }
 
         public void DeleteBoardFromDatabase(string token)
         {
-            var board = _dBContext.InformationBoards.SingleOrDefault(x => x.Token == token);
+            var board = InformationBoards.SingleOrDefault(x => x.Token == token);
             try
             {
-                _dBContext.InformationBoards.Remove(board);
-                _dBContext.SaveChanges();
+                InformationBoards.Remove(board);
+                SaveChanges();
             }
             catch (Exception ex)
             {
@@ -37,18 +37,18 @@ namespace PlateRecognitionSystem.Database
 
         public List<Board> GetListOfBoards(TypeOfBoards FunctionName)
         {
-            var boards = _dBContext.InformationBoards.Where(x => x.FunctionName == FunctionName);
+            var boards = InformationBoards.Where(x => x.FunctionName == FunctionName);
             return boards.ToList();
         }
 
         public List<Board> GetListOfBoards()
         {   
-            return _dBContext.InformationBoards.ToList();
+            return InformationBoards.ToList();
         }
         public int GetFreeSpaceInGarage()
         {
           
-            var garageInformation = _dBContext.GarageInformation.FirstOrDefault();
+            var garageInformation = GarageInformation.FirstOrDefault();
             if (garageInformation != null)
             {
                var freeSpace =  garageInformation.Capacity - garageInformation.Occupancy;

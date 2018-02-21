@@ -108,6 +108,8 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
             }
 
             //Find the [Two] Highest Outputs
+            List<string> tempCharName = new List<string>(); //temp
+            List<double> tempError = new List<double>(); //temp
             for (i = 0; i < _outputNum; i++)
             {
                 total = 0.0;
@@ -117,6 +119,8 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                 }
                 _outputLayer[i].InputSum = total;
                 _outputLayer[i].output = F(total);
+                tempCharName.Add(_outputLayer[i].Value); //temp
+                tempError.Add(1 - _outputLayer[i].output); //temp
                 if (_outputLayer[i].output > max)
                 {
                     recognizeModel.MatchedLow = recognizeModel.MatchedHigh;
@@ -126,6 +130,16 @@ namespace PlateRecognitionSystem.NeutralNetwork.Layers
                     recognizeModel.OutputHightValue = max;
                 }
             }
+            //temp
+            foreach (var name in tempCharName)
+            {
+                Console.WriteLine(name);
+            }
+            foreach (var error in tempError)
+            {
+                Console.WriteLine(error);
+            }
+            //temp
         }
     }
 }

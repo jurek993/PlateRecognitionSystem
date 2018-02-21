@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace PlateRecognitionSystem.Database
 {
-    public class GarageDatabase
+    public class GarageDatabase : GarageDBContext
     {
-        private GarageDBContext _dBContext = new GarageDBContext();
         private MainViewModel _viewModel;
 
         public BoardDatabase BoardDatabase = new BoardDatabase();
@@ -27,10 +26,10 @@ namespace PlateRecognitionSystem.Database
             if (plateNumber != string.Empty && plateNumber.Count() >= 5)
             {
                 string tempPlateNumber = plateNumber;
-                vehicle = _dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == tempPlateNumber);
+                vehicle = Vehicles.SingleOrDefault(x => x.NumberPlate == tempPlateNumber);
                 if (vehicle == null)
                 {
-                    expectedPlateNumber = _dBContext.Vehicles.Select(x => x.NumberPlate).ToArray().Where(l => CalculationHelpers.LevenshteinDistance(tempPlateNumber, l) == 1).ToArray();
+                    expectedPlateNumber = Vehicles.Select(x => x.NumberPlate).ToArray().Where(l => CalculationHelpers.LevenshteinDistance(tempPlateNumber, l) == 1).ToArray();
                     if (expectedPlateNumber.Count() == 1)
                     {
                         if (plateNumber.Count() == expectedPlateNumber[0].Count())
@@ -40,7 +39,7 @@ namespace PlateRecognitionSystem.Database
                             {
                                 if (expectedString[i] == loosedPlateNumber[i] && expectedString[i] != plateNumber[i])
                                 {
-                                    vehicle = _dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == expectedString);
+                                    vehicle = Vehicles.SingleOrDefault(x => x.NumberPlate == expectedString);
                                     plateNumber = expectedString;
                                 }
                             }
@@ -58,12 +57,12 @@ namespace PlateRecognitionSystem.Database
 
         public SingleVisit SaveSingleVisit(string licencePlate)
         { 
-            SingleVisit visit = _dBContext.SingleVisits.SingleOrDefault(x => x.ExitDate == null && x.Vehicle.NumberPlate == licencePlate);
-            Vehicle vehicle = _dBContext.Vehicles.SingleOrDefault(x => x.NumberPlate == licencePlate);
+            SingleVisit visit = SingleVisits.SingleOrDefault(x => x.ExitDate == null && x.Vehicle.NumberPlate == licencePlate);
+            Vehicle vehicle = Vehicles.SingleOrDefault(x => x.NumberPlate == licencePlate);
             if (vehicle == null) //nie ma abo i pierwszy raz wjeżdża
             {
                 vehicle = new Vehicle { NumberPlate = licencePlate };
-                _dBContext.Vehicles.Add(vehicle);
+                Vehicles.Add(vehicle);
             }
             if (visit == null) //entry
             {
@@ -72,7 +71,7 @@ namespace PlateRecognitionSystem.Database
                     EntryDate = DateTime.Now,
                     Vehicle = vehicle
                 };
-                _dBContext.SingleVisits.Add(visit);
+                SingleVisits.Add(visit);
             }
             else //exit
             {
@@ -80,10 +79,10 @@ namespace PlateRecognitionSystem.Database
                 if (visit.Vehicle.Owner == null) //nie ma abonamentu
                 {
                     TimeSpan visitTime = (DateTime)visit.ExitDate - visit.EntryDate;
-                    visit.Price = CalculationHelpers.CauntThePrice(visitTime, _dBContext.Prices.ToList());
+                    visit.Price = CalculationHelpers.CauntThePrice(visitTime, Prices.ToList());
                     visit.Vehicle.TotalPay += (double)visit.Price;                }
             }
-            _dBContext.SaveChanges();
+            SaveChanges();
             return visit;
         }
 
@@ -92,12 +91,12 @@ namespace PlateRecognitionSystem.Database
             switch (type)
             {
                 case TypeOfBoards.EnterBoard:
-                    _dBContext.GarageInformation.FirstOrDefault().Occupancy++;
-                    _dBContext.SaveChanges();
+                    GarageInformation.FirstOrDefault().Occupancy++;
+                    SaveChanges();
                     break;
                 case TypeOfBoards.ExitBoard:
-                    _dBContext.GarageInformation.FirstOrDefault().Occupancy--;
-                    _dBContext.SaveChanges();
+                    GarageInformation.FirstOrDefault().Occupancy--;
+                    SaveChanges();
                     break;
             }
         }

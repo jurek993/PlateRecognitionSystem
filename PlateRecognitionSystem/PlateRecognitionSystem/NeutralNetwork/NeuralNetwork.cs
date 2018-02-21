@@ -43,18 +43,13 @@ namespace PlateRecognitionSystem.NeutralNetwork
             do
             {
                 currentError = 0;
-                foreach (KeyValuePair<string, double[]> pattern in _trainingSet)
+                Random r = new Random();
+                foreach (KeyValuePair < string, double[]> pattern in _distractionTrainingSet.OrderBy(x => r.Next()))
                 {
-                    var dictonaryListForOneChar = _distractionTrainingSet.Where(x => x.Key[0].ToString() == pattern.Key[0].ToString()).ToList();
-                    dictonaryListForOneChar.Add(pattern);
-                    foreach (var dictonary in dictonaryListForOneChar)
-                    {
-                        _neuralNet.ForwardPropagate(dictonary.Value, pattern.Key);
-                        _neuralNet.BackPropagate();
-                        currentError += _neuralNet.GetError();
-                    }
+                    _neuralNet.ForwardPropagate(pattern.Value, pattern.Key[0].ToString());
+                    _neuralNet.BackPropagate();
+                    currentError += _neuralNet.GetError();
                 }
-
                 currentIteration++;
 
                 if (currentIteration % 5 == 0)
@@ -62,26 +57,29 @@ namespace PlateRecognitionSystem.NeutralNetwork
                     ViewModel.CurrentError = currentError;
                     ViewModel.CurrentIteration = currentIteration;
                 }
-                if (currentIteration % 50 == 0)
+                if (currentIteration % 10 == 0)
                 {
-                    List<string> removed = new List<string>();
+                    List<string> toRemoved = new List<string>();
                     bool isOver = true;
                     foreach (var samplePattern in _settingsModel.SampleTrainingSet)
                     {
                         Recognize(samplePattern.Value, _recognizeModel);
-                        if (samplePattern.Key[0].Equals(_recognizeModel.MatchedHigh[0]) && _recognizeModel.OutputHightValue >= 0.9)
+                        if (samplePattern.Key[0].Equals(_recognizeModel.MatchedHigh[0]) && _recognizeModel.OutputHightValue >= 0.1)
                         {
-                            removed.Add(samplePattern.Key);
-                            _trainingSet.Remove(samplePattern.Key);
+                            toRemoved.Add(samplePattern.Key);
+                           // _trainingSet.Remove(samplePattern.Key);
                         }
                         else
                         {
+                           // currentError = 0.1;
+                            
                             isOver = false;
+                            //isOver = true;
                         }
                     }
                     if (isOver)
                     {
-                        foreach (var patternToremove in removed)
+                        foreach (var patternToremove in toRemoved)
                         {
                             _settingsModel.SampleTrainingSet.Remove(patternToremove);
                         }

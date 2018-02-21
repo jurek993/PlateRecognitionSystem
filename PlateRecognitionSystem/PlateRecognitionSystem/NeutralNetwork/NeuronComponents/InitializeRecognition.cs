@@ -97,7 +97,7 @@ namespace PlateRecognitionSystem.NeutralNetwork.NeuronComponents
             double[] input = ImageProcessing.ToMatrix(character,
             _settings.SettingsModel.AverageImageHeight, _settings.SettingsModel.AverageImageWidth);
             _initializeNetwork.NeuralNetwork.Recognize(input, _recognizeModel);
-            if(_recognizeModel.MatchedHigh != "#")
+            if(_recognizeModel.OutputHightValue > 0.1)
             {
                 _viewModel.MatchedHightValue = _recognizeModel.MatchedHigh;
                 _viewModel.MatchedLowValue = _recognizeModel.MatchedLow;
